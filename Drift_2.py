@@ -41,14 +41,14 @@ def stop_right():
 def left():
     global dv
     global n
-    #dv = 10 * 1.001**n
-    dv = 10 
+    dv = 10 * 1.001**n
+    #dv = 10 
 
 def right():
     global dv
     global n
-    #dv = -10 * 1.001**n
-    dv = -10 
+    dv = -10 * 1.001**n
+    #dv = -10 
 
 
 
@@ -66,7 +66,7 @@ while not gameover:
     car.left(dv)
     car.forward(ds)
 
-    #ds = ds*1.003
+    ds = ds*1.001
 
     Kne += 1
     if(Kne >= 20):
