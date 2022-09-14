@@ -41,13 +41,13 @@ def stop_right():
 def left():
     global dv
     global n
-    dv = 10 * 1.001**n
+    dv = 10 * 1.0011**n
     #dv = 10 
 
 def right():
     global dv
     global n
-    dv = -10 * 1.001**n
+    dv = -10 * 1.0011**n
     #dv = -10 
 
 
