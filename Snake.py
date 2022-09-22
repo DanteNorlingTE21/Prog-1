@@ -57,7 +57,7 @@ apple.speed(0)
 apple.shape("square")
 apple.color("Red")
 apple.penup()
-apple.goto(random.randrange(-400,400,20),random.randrange(-400,400,20))
+apple.goto(random.randrange(-380,380,20), random.randrange(-380,380,20))
 
 new_block()
 
@@ -74,21 +74,24 @@ while running:
     crawl_x = Snake_block[0].xcor()
     crawl_y = Snake_block[0].ycor()
 
-
-    Snake_block[0].forward(20)
     if len(Snake_block) > 1:
         Snake_block[-1].setx(crawl_x)    
         Snake_block[-1].sety(crawl_y)
         Snake_block = snake_list_shuffle(Snake_block)
+
+    Snake_block[0].forward(20)
     
-    for tail in range(1,len(Snake_block)):
-        if (Snake_block[0].xcor() == Snake_block[tail].xcor()) and (Snake_block[0].ycor() == Snake_block[tail].ycor()):
+    for tail in Snake_block[1:]:
+        if ((tail.xcor()-10) < Snake_block[0].xcor() < (tail.xcor()+10)) and ((tail.ycor()-10) < Snake_block[0].ycor() < (tail.ycor()+10)):
             running = False
+
+
+
     if ((apple.xcor()-10) < Snake_block[0].xcor() < (apple.xcor() +10)) and ((apple.ycor()-10) < Snake_block[0].ycor() < (apple.ycor() +10)):
         Score += 1
-        apple.goto(random.randrange(-400,400,20),random.randrange(-400,400,20))
+        apple.goto(random.randrange(-380,380,20), random.randrange(-380,380,20))
         new_block()
-    if Snake_block[0].xcor() > 400 or Snake_block[0].xcor() < -400 or Snake_block[0].ycor() > 400 or Snake_block[0].ycor() < -400:
+    if Snake_block[0].xcor() > 390 or Snake_block[0].xcor() < -390 or Snake_block[0].ycor() > 390 or Snake_block[0].ycor() < -390:
         running = False
 
     time.sleep(time_delta)
