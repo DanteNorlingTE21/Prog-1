@@ -13,20 +13,46 @@ def new_block():
     newblock.color(0,1,0)
     Snake_block.append(newblock)
 
-#Svänger
+#Svänger men låter inte ormen göra 180
 def turn_left():
-    if Snake_block[0].heading() != 0:
+    """global turning
+    if Snake_block[0].heading() != 0 and (not turning):
+        Snake_block[0].seth(180)
+        turning = True"""
+    #Gammal kod
+    if len(Snake_block)>1:   
+        if not round(Snake_block[0].xcor()) > round(Snake_block[1].xcor()):
+            Snake_block[0].seth(180)
+        else:
+            print("x", Snake_block[0].xcor(), Snake_block[1].xcor())
+    else:
         Snake_block[0].seth(180)
 def turn_right():
-    if Snake_block[0].heading() != 180:
+    if len(Snake_block)>1: 
+        if not round(Snake_block[0].xcor()) < round(Snake_block[1].xcor()):
+            Snake_block[0].seth(0)
+        else:
+            print("x", Snake_block[0].xcor(), Snake_block[1].xcor())
+    else:
         Snake_block[0].seth(0)
 def turn_up():
-    if Snake_block[0].heading() != 270:
+    if len(Snake_block)>1: 
+        if not round(Snake_block[0].ycor()) < round(Snake_block[1].ycor()):
+            Snake_block[0].seth(90)
+        else:
+            print("y", Snake_block[0].ycor(), Snake_block[1].ycor())
+    else:
         Snake_block[0].seth(90)
 def turn_down():
-    if Snake_block[0].heading() != 90:
+    if len(Snake_block)>1: 
+        if not round(Snake_block[0].ycor()) > round(Snake_block[1].ycor()):
+            Snake_block[0].seth(270)
+        else:
+            print("y", Snake_block[0].ycor(), Snake_block[1].ycor())
+    else:
         Snake_block[0].seth(270)
-
+#Problem: Det går att svänga tillbaka precis när ändan flyttar sig/// ormen låser upp ibland
+#Lösning avrunda talen för det blev en decimalutveckling. Går fortfarande att göra 180 i början
 
 """ Byter ordning på objekt i en lista. Används fr att byta ordning på ormblocken. 
 [1,2,3,4,5] --> [1,5,2,3,4]--> [1,4,5,2,3]-->[1,3,4,5,2]-->[1,2,3,4,5] 
@@ -43,7 +69,7 @@ def snake_list_shuffle(x):
     return funklist
 
 
-
+#turning = False
 running = True
 fps = 12
 time_delta = 1/fps
@@ -78,7 +104,10 @@ win.onkeypress(turn_right, "Right")
 win.onkeypress(turn_up, "Up")
 win.onkeypress(turn_down, "Down")
 win.onkeypress(new_block, "space")
-
+win.onkeypress(turn_left, "a")
+win.onkeypress(turn_right, "d")
+win.onkeypress(turn_up, "w")
+win.onkeypress(turn_down, "s")
 
 #Main loop
 while running:
@@ -109,6 +138,8 @@ while running:
         running = False
    
     #väntar
+
+    #turning = False
     time.sleep(time_delta)
     win.update()
 print(Score)
