@@ -71,7 +71,7 @@ def snake_list_shuffle(x):
 
 #turning = False
 running = True
-fps = 12
+fps = 24
 time_delta = 1/fps
 
 Score = 0
