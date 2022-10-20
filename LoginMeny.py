@@ -3,6 +3,16 @@
 import webbrowser
 import random
 
+def random_yt_url():
+    bas64 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
+    url_end =''
+    for i in range(11):
+        url_end += bas64[random.randint(0,63)]
+    print("https://www.youtube.com/watch?v="+url_end)
+    return "https://www.youtube.com/watch?v="+url_end
+
+
+
 lista = ['https://www.youtube.com/watch?v=3LmmCYxe5k0','https://www.youtube.com/watch?v=D9Sv4XHWc7o','https://www.youtube.com/watch?v=WOdTUOeDAtY','https://www.youtube.com/watch?v=jE2Tp67OlVo']
 
 accounts = {}
@@ -59,7 +69,7 @@ while True:
         if logged_in:
             webbrowser.open(random.choice(lista))
         else:
-            webbrowser.open('https://www.youtube.com/watch?v=Oqrm-9Wy8iU')
+            webbrowser.open(random_yt_url())
     elif menyval == "4":
         if logged_in:
             c = input("Do you want to log out? (y/n):")
