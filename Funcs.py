@@ -1,3 +1,6 @@
+from email.mime import base
+import random
+
 def snake_list_shuffle(x):
     funklist = []
     funklist.append(x[0])
@@ -43,3 +46,12 @@ def palindrome(x):
         return True
     else:
         return False
+
+def random_yt_url():
+    bas64 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
+    url_end =''
+    for i in range(11):
+        url_end += bas64[random.randint(0,63)]
+    print("https://www.youtube.com/watch?v="+url_end)
+    return "https://www.youtube.com/watch?v="+url_end
+random_yt_url()
