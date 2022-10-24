@@ -55,6 +55,8 @@ while True:
                         print("INCORRECT PASSWORD!\n")
                 else:
                     print("INCORRECT USERNAME!\n")
+            else:
+                print("LOGIN FAILED")
         else:
             print("You're Already Logged In\n")
        
