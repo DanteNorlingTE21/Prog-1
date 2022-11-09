@@ -63,19 +63,12 @@ def tile_gen(grid=int,mines=int):
             tile_titty.goto((-10*grid +10 +x*20),(-10*grid + 10 +y*20))
             tile_titty.dx = 0
             tile_titty.dy = 0
-            if bombcounter < mines:
-                tile_titty.dx = random.randint(0,1)
-                if tile_titty.dx == 1:
-                    bombcounter += 1
             titties.append(tile_titty)
-    if bombcounter < mines: #Kollar om slumpen gjort för få minor
-        for ntts in titties:    #Går igenom listan 
-            if ntts.dx == 0:    #Kollar om rutan är en mina
-                ntts.dx = 1     #Lägger till en mina
-                bombcounter +=1 #räknar minan
-            if bombcounter >= mines: #Kollar om det fins tillräckligt många minor för for loopen kommer gå igenom hela listan annars vilket skulle lägga till för många minor
-                break   #Bryter om tillräckligt många minor är uppnådda för att det inte ska bli för många
-    
+    while bombcounter < mines:
+        potential_bomb =random.choice(titties)
+        if potential_bomb.dx == 0:
+            potential_bomb.dx = 1
+            bombcounter +=1
     return titties
 
 def rightclick(x,y):
@@ -93,12 +86,14 @@ def rightclick(x,y):
 def leftclick(x,y):
     for i in range(len(tiles)):
         if (tiles[i].xcor()-10) < x < (tiles[i].xcor()+10) and (tiles[i].ycor()-10) < y < (tiles[i].ycor()+10): #Kollar vilken ruta som klickas
-            if tiles[i].dx == 1: #Kollar om rutan är en bomb
-                tiles[i].shape("mine.gif") #Visar bomb grafiken
-            else:
-                print(blocktype(i))
-                
-
+            if tiles[i].dy == 0:
+                if tiles[i].dx == 1: #Kollar om rutan är en bomb
+                    tiles[i].shape("mine.gif") #Visar bomb grafiken
+                    tiles[i].dy = 2
+                else:
+                    #print(blocktype(i))
+                    tile_determiner(i)
+                    tiles[i].dy = 2
 """
 
 måste kolla rutorna runtom för minor
@@ -125,7 +120,7 @@ Jag skapar en funktion för att identifiera blocktyp/position.
 """
 
 def blocktype(block_index =int):
-    """Returnerar värde 1 - 9 vilket motsvarar typ:
+    """Returnerar värde 1 - 9 vilket motsvarar  vilken typ av ruta det är:
     ,1 = vänstertophörn 2 = toppkant, 3 = högertophörn, 4=vänsterkant, 5=mitten, 6 =högerkant, 7 =vänsterbottenhörn, 8 = bottenkant, 9 = högerbottenhörn"""
     gridside = sqrt(len(tiles))
     leftside = False
@@ -159,6 +154,113 @@ def blocktype(block_index =int):
         return 8
     else:
         return 5
+
+def tile_determiner(i=int):
+    """Bestämmer siffran på en kvadrat utifrån dess index"""
+    neighbour_bombs = 0
+    blockpos = blocktype(i)
+    if blockpos == 1:
+        neighbour_bombs += tiles[i+1].dx #höger
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))].dx #  ner
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))+1].dx# ner + höger
+    if blockpos == 2:
+        neighbour_bombs += tiles[i-1].dx #vänster
+        neighbour_bombs += tiles[i+1].dx #höger
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))].dx #  ner
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))-1].dx #  ner + vänster
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))+1].dx# ner + höger     
+    if blockpos == 3:
+        neighbour_bombs += tiles[i-1].dx #vänster
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))].dx #  ner
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))-1].dx #  ner + vänster
+    if blockpos == 4:
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles))))].dx # upp
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles)))) +1].dx # upp +höger
+        neighbour_bombs += tiles[i+1].dx #höger
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))].dx #  ner
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))+1].dx# ner + höger  
+    if blockpos == 5:
+        neighbour_bombs += tiles[i+1].dx #höger 
+        neighbour_bombs += tiles[i-1].dx #vänster
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles))))].dx # upp
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))].dx #  ner
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))+1].dx# ner + höger
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))-1].dx# ner + vänster
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles)))) +1].dx # upp +höger
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles)))) -1].dx # upp +vänster 
+    if blockpos == 6:
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles))))].dx # upp   
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles)))) -1].dx # upp +vänster
+        neighbour_bombs += tiles[i-1].dx #vänster
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))].dx #  ner
+        neighbour_bombs += tiles[i-int((sqrt(len(tiles))))-1].dx# ner + vänster
+    if blockpos == 7:
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles))))].dx # upp 
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles)))) +1].dx # upp +höger
+        neighbour_bombs += tiles[i+1].dx #höger 
+    if blockpos == 8:
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles))))].dx # upp                    
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles)))) +1].dx # upp +höger
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles)))) -1].dx # upp +vänster
+        neighbour_bombs += tiles[i+1].dx #höger  
+        neighbour_bombs += tiles[i-1].dx #vänster
+    if blockpos == 9:
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles))))].dx # upp 
+        neighbour_bombs += tiles[i+int((sqrt(len(tiles)))) -1].dx # upp +vänster 
+        neighbour_bombs += tiles[i-1].dx #vänster
+    tiles[i].shape(f"tile{neighbour_bombs}.gif")
+
+    if neighbour_bombs == 0:
+        if blockpos == 1:
+            leftclick(tiles[i+1].xcor(),tiles[i+1].ycor())#höger
+            leftclick(tiles[i-int((sqrt(len(tiles))))].xcor(),tiles[i-int((sqrt(len(tiles))))].ycor())#ner
+            leftclick(tiles[i-int((sqrt(len(tiles))))+1].xcor(),tiles[i-int((sqrt(len(tiles))))+1].ycor())#ner + höger
+        if blockpos == 2:
+            leftclick(tiles[i+1].xcor(),tiles[i+1].ycor())#höger
+            leftclick(tiles[i-1].xcor(),tiles[i-1].ycor())#vänster            
+            leftclick(tiles[i-int((sqrt(len(tiles))))].xcor(),tiles[i-int((sqrt(len(tiles))))].ycor())#ner
+            leftclick(tiles[i-int((sqrt(len(tiles))))+1].xcor(),tiles[i-int((sqrt(len(tiles))))+1].ycor())#ner + höger
+            leftclick(tiles[i-int((sqrt(len(tiles))))-1].xcor(),tiles[i-int((sqrt(len(tiles))))-1].ycor())#ner + vänster
+        if blockpos == 3:
+            leftclick(tiles[i-1].xcor(),tiles[i-1].ycor())#vänster      
+            leftclick(tiles[i-int((sqrt(len(tiles))))].xcor(),tiles[i-int((sqrt(len(tiles))))].ycor())#ner
+            leftclick(tiles[i-int((sqrt(len(tiles))))-1].xcor(),tiles[i-int((sqrt(len(tiles))))-1].ycor())#ner + vänster
+        if blockpos == 4:
+            leftclick(tiles[i+int((sqrt(len(tiles))))].xcor(),tiles[i+int((sqrt(len(tiles))))].ycor())#upp     
+            leftclick(tiles[i+int((sqrt(len(tiles))))+1].xcor(),tiles[i+int((sqrt(len(tiles))))+1].ycor())#upp + höger
+            leftclick(tiles[i+1].xcor(),tiles[i+1].ycor())#höger
+            leftclick(tiles[i-int((sqrt(len(tiles))))].xcor(),tiles[i-int((sqrt(len(tiles))))].ycor())#ner
+            leftclick(tiles[i-int((sqrt(len(tiles))))+1].xcor(),tiles[i-int((sqrt(len(tiles))))+1].ycor())#ner + höger    
+        if blockpos == 5:
+            leftclick(tiles[i+int((sqrt(len(tiles))))].xcor(),tiles[i+int((sqrt(len(tiles))))].ycor())#upp     
+            leftclick(tiles[i+int((sqrt(len(tiles))))+1].xcor(),tiles[i+int((sqrt(len(tiles))))+1].ycor())#upp + höger
+            leftclick(tiles[i+int((sqrt(len(tiles))))-1].xcor(),tiles[i+int((sqrt(len(tiles))))-1].ycor())#upp + vänster
+            leftclick(tiles[i+1].xcor(),tiles[i+1].ycor())#höger
+            leftclick(tiles[i-1].xcor(),tiles[i-1].ycor())#vänster  
+            leftclick(tiles[i-int((sqrt(len(tiles))))].xcor(),tiles[i-int((sqrt(len(tiles))))].ycor())#ner
+            leftclick(tiles[i-int((sqrt(len(tiles))))+1].xcor(),tiles[i-int((sqrt(len(tiles))))+1].ycor())#ner + höger        
+            leftclick(tiles[i-int((sqrt(len(tiles))))-1].xcor(),tiles[i-int((sqrt(len(tiles))))-1].ycor())#ner + vänster
+        if blockpos == 6:
+            leftclick(tiles[i+int((sqrt(len(tiles))))].xcor(),tiles[i+int((sqrt(len(tiles))))].ycor())#upp            
+            leftclick(tiles[i+int((sqrt(len(tiles))))-1].xcor(),tiles[i+int((sqrt(len(tiles))))-1].ycor())#upp + vänster
+            leftclick(tiles[i-1].xcor(),tiles[i-1].ycor())#vänster
+            leftclick(tiles[i-int((sqrt(len(tiles))))-1].xcor(),tiles[i-int((sqrt(len(tiles))))-1].ycor())#ner + vänster
+            leftclick(tiles[i-int((sqrt(len(tiles))))].xcor(),tiles[i-int((sqrt(len(tiles))))].ycor())#ner
+        if blockpos == 7:
+            leftclick(tiles[i+int((sqrt(len(tiles))))].xcor(),tiles[i+int((sqrt(len(tiles))))].ycor())#upp     
+            leftclick(tiles[i+int((sqrt(len(tiles))))+1].xcor(),tiles[i+int((sqrt(len(tiles))))+1].ycor())#upp + höger
+            leftclick(tiles[i+1].xcor(),tiles[i+1].ycor())#höger
+        if blockpos == 8:
+            leftclick(tiles[i+int((sqrt(len(tiles))))].xcor(),tiles[i+int((sqrt(len(tiles))))].ycor())#upp     
+            leftclick(tiles[i+int((sqrt(len(tiles))))+1].xcor(),tiles[i+int((sqrt(len(tiles))))+1].ycor())#upp + höger
+            leftclick(tiles[i+int((sqrt(len(tiles))))-1].xcor(),tiles[i+int((sqrt(len(tiles))))-1].ycor())#upp + vänster
+            leftclick(tiles[i+1].xcor(),tiles[i+1].ycor())#höger
+            leftclick(tiles[i-1].xcor(),tiles[i-1].ycor())#vänster  
+        if blockpos == 9:
+            leftclick(tiles[i+int((sqrt(len(tiles))))].xcor(),tiles[i+int((sqrt(len(tiles))))].ycor())#upp
+            leftclick(tiles[i+int((sqrt(len(tiles))))-1].xcor(),tiles[i+int((sqrt(len(tiles))))-1].ycor())#upp + vänster
+            leftclick(tiles[i-1].xcor(),tiles[i-1].ycor())#vänster  
+
 
 app = startup(gridsize)
 
