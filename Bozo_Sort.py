@@ -8,7 +8,7 @@ def bozosort(list):
             bozoentry = list.pop(random.randint(0,(len(list)-1)))
             bozolist.append(bozoentry)
         #Kolla om listan är sorterad
-        #print(bozolist)
+        print(bozolist) 
         for i in range(len(bozolist)):
             if i != len(bozolist)-1:
                 if bozolist[i] > bozolist[i+1]:
@@ -17,6 +17,6 @@ def bozosort(list):
             break
     return bozolist
 
-testlista = [1,8,7,9,2,2,7,89]
+testlista = [1,8,7,9,2,2,7,89,123,69,420]
 testlista = bozosort(testlista)
 print(testlista)
