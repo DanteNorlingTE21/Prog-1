@@ -4,6 +4,8 @@ import random
 
 def update():
     isak_object_1.rotation_y += time.dt * 100
+    
+    
     if held_keys['q']:                               # If q is pressed
         camera.position += (0, time.dt, 0)           # (X,Y,Z) movement
     if held_keys['a']:                               # If a is pressed
