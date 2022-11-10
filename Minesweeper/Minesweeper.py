@@ -2,6 +2,15 @@ import turtle
 import random
 from math import sqrt
 
+""" Todo:
+Gameover
+restarta
+Middle mouse klick
+
+"""
+
+
+
 number_of_bombs =int(input("NUMBER OF MINES:"))
 gridsize = int(input("GRIDSIZE:"))
 
@@ -162,7 +171,7 @@ def tile_determiner(i=int):
     """Bestämmer siffran på en kvadrat utifrån dess index"""
     global tiles_to_be_clicked
     neighbour_bombs = 0
-    if tiles[i].dy !=2:
+    if tiles[i].dy !=2: #Kollar om en tile redan fått denna fukntion körd på sig själv och på så sätt effektiviserar då den inte kör pågrund.....
         blockpos = blocktype(i)
         if blockpos == 1:
             neighbour_bombs += tiles[i+1].dx #höger
@@ -217,6 +226,9 @@ def tile_determiner(i=int):
         tiles[i].dy = 2
         if neighbour_bombs == 0:
             if blockpos == 1:
+                """ Jag lägger till index på de rutor runtom den tomma rutan i en lista"""
+
+            
             #leftclick(tiles[i+1].xcor(),tiles[i+1].ycor())#höger
             #leftclick(tiles[i-int((sqrt(len(tiles))))].xcor(),tiles[i-int((sqrt(len(tiles))))].ycor())#ner
             #leftclick(tiles[i-int((sqrt(len(tiles))))+1].xcor(),tiles[i-int((sqrt(len(tiles))))+1].ycor())#ner + höger
@@ -319,6 +331,7 @@ print(len(tiles))
 
 while True:
     print(tiles_to_be_clicked)
+    #Kör funktionen på alla tiles runt den tomma tile:en
     for num in tiles_to_be_clicked:
         tile_determiner(num)
         tiles_to_be_clicked.remove(num)
