@@ -9,7 +9,15 @@ Middle mouse klick
 
 """
 
+""" Cheat sheet
+dx 0 = ingen mina
+dx 1 = mina
+dy 0 = ingen flagga
+dy 1 = flagga
+dy 2 = Kan inte klickas
 
+
+"""
 
 number_of_bombs =int(input("NUMBER OF MINES:"))
 gridsize = int(input("GRIDSIZE:"))
@@ -18,6 +26,7 @@ tiles ={}
 
 tiles_to_be_clicked = []
 
+running = True
 
 def startup(grid=int):
     """skapar skärm och texturer """
@@ -68,9 +77,9 @@ def tile_gen(grid=int,mines=int):
     for y in range(0,grid):                #Skapar grid * grid turtles som blir rutorna : 
         for x in range(0, grid):        
             tile_titty = turtle.Turtle()
+            tile_titty.speed(0)
             tile_titty.shape('tileface.gif')
             tile_titty.penup()
-            tile_titty.speed(0)
             tile_titty.goto((-10*grid +10 +x*20),(-10*grid + 10 +y*20))
             tile_titty.dx = 0
             tile_titty.dy = 0
@@ -81,6 +90,23 @@ def tile_gen(grid=int,mines=int):
             potential_bomb.dx = 1
             bombcounter +=1
     return titties
+
+def restart():
+    mines = int(input("NUMBER OF MINES:"))
+    for i in tiles:
+        i.dy = 0
+        i.dx = 0
+        i.shape('tileface.gif')
+    bombcounter = 0
+    while bombcounter < mines:              #Gör slumpade tiles till bomber: så länge tilen inte är en bomb och så länge antalet minor inte är uppnått
+        potential_bomb =random.choice(tiles)
+        if potential_bomb.dx == 0:
+            potential_bomb.dx = 1
+            bombcounter +=1
+
+def quit():
+    global running
+    running = False
 
 def rightclick(x,y):
     """ Sätter/tar bort flaggor"""
@@ -102,6 +128,8 @@ def leftclick(x,y):
                 if tiles[i].dx == 1: #Kollar om rutan är en bomb
                     tiles[i].shape("mine.gif") #Visar bomb grafiken
                     tiles[i].dy = 2
+                    for titties in tiles:
+                        titties.dy = 2
                 else:
                     #print(blocktype(i))
                     tile_determiner(i)
@@ -325,12 +353,14 @@ tiles = tile_gen(gridsize,number_of_bombs)
 
 #inputs
 app.listen()
+app.onkey(restart,'r')
 app.onclick(rightclick, btn=3, add=None)
 app.onclick(leftclick, btn=1, add=None)
+
 print(len(tiles))
 
-while True:
-    print(tiles_to_be_clicked)
+while running:
+    #print(tiles_to_be_clicked) DEBUG 
     #Kör funktionen på alla tiles runt den tomma tile:en
     for num in tiles_to_be_clicked:
         tile_determiner(num)
