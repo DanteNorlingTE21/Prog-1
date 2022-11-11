@@ -2,12 +2,7 @@ import turtle
 import random
 from math import sqrt
 
-""" Todo:
-Gameover
-restarta
-Middle mouse klick
 
-"""
 
 """ Cheat sheet
 dx 0 = ingen mina
@@ -19,22 +14,24 @@ dy 2 = Kan inte klickas
 
 """
 
-number_of_bombs =int(input("NUMBER OF MINES:"))
-gridsize = int(input("GRIDSIZE:"))
-
+number_of_bombs =0
+#gridsize = int(input("GRIDSIZE:"))
+gridsize = 0
 tiles ={}
-
 tiles_to_be_clicked = []
 
-running = True
 
-def startup(grid=int):
+
+def startup():#grid=int):
     """skapar skärm och texturer """
+    global gridsize
+    global number_of_bombs
     win = turtle.Screen() #Skapar fönstret
     
     #win.setup((20*grid+grid-1),(20*grid+grid-1)) #grid-1 är pixlarna för linjerna : används inte, var del av linedrawer innan jag skapade texturer
-   
-    win.setup(20*grid+90,20*grid+90)
+    gridsize =int(win.numinput("GRID","What Dimensions are the board? X*X:",10,1,50))
+    number_of_bombs = int(win.numinput("MINES","How many mines are there?:",gridsize,1,gridsize**2))
+    win.setup(20*gridsize+90,20*gridsize+90)
     win.bgcolor("grey")
     win.title("Minesweeper")
     win.addshape("tileface.gif") #Laddar texturer:
@@ -50,6 +47,8 @@ def startup(grid=int):
     win.addshape("tile8.gif")    #'
     win.addshape("mine.gif")     #'
     win.addshape("happyface.gif")#'
+    win.addshape("wait.gif")#'
+    win.addshape("clean.gif")#'
     """
     linedrawer = turtle.Turtle()
     linedrawer.color("black")
@@ -94,9 +93,11 @@ def tile_gen(grid=int,mines=int):
 
 def restart():
     #mines = int(input("NUMBER OF MINES:"))
+    tiles[len(tiles)-1].shape("wait.gif")
     global number_of_bombs
     mines = number_of_bombs
     for i in tiles:
+        i.shape("clean.gif")
         i.dy = 0
         i.dx = 0
         i.shape('tileface.gif')
@@ -561,34 +562,36 @@ def middle_cl_calc(i = int, facevalue =int):
                 tiles_to_be_clicked.append(i-1)#vänster
                 tiles_to_be_clicked.append(i+int((sqrt(len(tiles)))))#upp
 
+while True:
+    running = True
+    app = startup()
+    
 
-app = startup(gridsize)
+    tiles = tile_gen(gridsize,number_of_bombs)
 
-tiles = tile_gen(gridsize,number_of_bombs)
-
-button = turtle.Turtle()
-button.speed(0)
-button.penup()
-button.shape("happyface.gif")
-button.goto(0,10*gridsize +30)
+    button = turtle.Turtle()
+    button.speed(0)
+    button.penup()
+    button.shape("happyface.gif")
+    button.goto(0,10*gridsize +30)
 
 
 
 
-#inputs
-app.listen()
-app.onkey(restart,'r')
-app.onkey(quit, 'x')
-app.onclick(rightclick, btn=3, add=None)
-app.onclick(middleclick, btn=2, add=None)
-app.onclick(leftclick, btn=1, add=None)
+    #inputs
+    app.listen()
+    app.onkey(restart,'r')
+    app.onkey(quit, 'x')
+    app.onclick(rightclick, btn=3, add=None)
+    app.onclick(middleclick, btn=2, add=None)
+    app.onclick(leftclick, btn=1, add=None)
 
-print(len(tiles))
+    print(len(tiles))
 
-while running:
-    #print(tiles_to_be_clicked) DEBUG 
-    #Kör funktionen på alla tiles runt den tomma tile:en
-    for num in tiles_to_be_clicked:
-        tile_determiner(num)
-        tiles_to_be_clicked.remove(num)
-    app.update()
+    while running:
+        #print(tiles_to_be_clicked) DEBUG 
+        #Kör funktionen på alla tiles runt den tomma tile:en
+        for num in tiles_to_be_clicked:
+            tile_determiner(num)
+            tiles_to_be_clicked.remove(num)
+        app.update()
