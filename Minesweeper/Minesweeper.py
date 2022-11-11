@@ -49,6 +49,7 @@ def startup(grid=int):
     win.addshape("tile7.gif")    #'
     win.addshape("tile8.gif")    #'
     win.addshape("mine.gif")     #'
+    win.addshape("happyface.gif")#'
     """
     linedrawer = turtle.Turtle()
     linedrawer.color("black")
@@ -568,7 +569,7 @@ tiles = tile_gen(gridsize,number_of_bombs)
 button = turtle.Turtle()
 button.speed(0)
 button.penup()
-button.shape("tileface.gif")
+button.shape("happyface.gif")
 button.goto(0,10*gridsize +30)
 
 
