@@ -562,6 +562,12 @@ def middle_cl_calc(i = int, facevalue =int):
                 tiles_to_be_clicked.append(i-1)#vänster
                 tiles_to_be_clicked.append(i+int((sqrt(len(tiles)))))#upp
 
+button = turtle.Turtle()
+button.speed(0)
+button.penup()
+
+
+
 while True:
     running = True
     app = startup()
@@ -569,9 +575,6 @@ while True:
 
     tiles = tile_gen(gridsize,number_of_bombs)
 
-    button = turtle.Turtle()
-    button.speed(0)
-    button.penup()
     button.shape("happyface.gif")
     button.goto(0,10*gridsize +30)
 
