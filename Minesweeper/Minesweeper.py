@@ -10,20 +10,18 @@ dx 1 = mina
 dy 0 = ingen flagga
 dy 1 = flagga
 dy 2 = Kan inte klickas
-
-
 """
 
-number_of_bombs =0
+number_of_bombs = 0
 #gridsize = int(input("GRIDSIZE:"))
 gridsize = 0
-tiles ={}
+tiles =[]
 tiles_to_be_clicked = []
 
-
+clicking_allowed=True
 
 def startup():#grid=int):
-    """skapar skärm och texturer """
+    """skapar skärm och laddar texturer """
     global gridsize
     global number_of_bombs
     win = turtle.Screen() #Skapar fönstret
@@ -50,6 +48,10 @@ def startup():#grid=int):
     win.addshape("wait.gif")#'
     win.addshape("clean.gif")#'
     """
+    GAMMALT; ANVÄNDS EJ
+
+
+
     linedrawer = turtle.Turtle()
     linedrawer.color("black")
     linedrawer.penup()
@@ -67,34 +69,40 @@ def startup():#grid=int):
     """
 
     return win
+    
 def tile_gen(grid=int,mines=int):
     """ Skapar tiles och minor
         if tile dx = 0 it's not a bomb
         dx = 1 = bomb
         dy = flag status  eller om den har bestämt värde"""
+    global clicking_allowed
+    clicking_allowed = False # Gör att man inte kan klicka medans rutorna skapas
     bombcounter = 0
-    titties = []    
+    titties = []    #Gör en lokal lista, titties är kort för entitys
     for y in range(0,grid):                #Skapar grid * grid turtles som blir rutorna : 
         for x in range(0, grid):        
-            tile_titty = turtle.Turtle()
-            tile_titty.speed(0)
-            tile_titty.shape('tileface.gif')
-            tile_titty.penup()
-            tile_titty.goto((-10*grid +10 +x*20),(-10*grid + 10 +y*20))
-            tile_titty.dx = 0
-            tile_titty.dy = 0
-            titties.append(tile_titty)
+            tile_titty = turtle.Turtle() # Skapar turteln
+            tile_titty.speed(0) # Gör att de rör sig så snabbt som möjligt
+            tile_titty.shape('tileface.gif') # Ger de textur
+            tile_titty.penup() # Gör att de inte ritar streck när de rör sig
+            tile_titty.goto((-10*grid +10 +x*20),(-10*grid + 10 +y*20)) #Placerar rutrona 20 pixlar isär för att texturerna är 20x20 pixlar
+            tile_titty.dx = 0 # inte mina
+            tile_titty.dy = 0 # inte flagga
+            titties.append(tile_titty) #lägger till turteln i den locala listan
     while bombcounter < mines:              #Gör slumpade tiles till bomber: så länge tilen inte är en bomb och så länge antalet minor inte är uppnått
         potential_bomb =random.choice(titties)
         if potential_bomb.dx == 0:
             potential_bomb.dx = 1
             bombcounter +=1
-    return titties
+    clicking_allowed = True # Gör så att man kan klicka igen
+    return titties #returnerar listan
 
 def restart():
     #mines = int(input("NUMBER OF MINES:"))
-    tiles[len(tiles)-1].shape("wait.gif")
+    tiles[len(tiles)-1].shape("wait.gif") # Gör högerhörnet till ett w för wait
     global number_of_bombs
+    global clicking_allowed
+    clicking_allowed = False # Gör att man inte kan klicka
     mines = number_of_bombs
     for i in tiles:
         i.shape("clean.gif")
@@ -107,6 +115,15 @@ def restart():
         if potential_bomb.dx == 0:
             potential_bomb.dx = 1
             bombcounter +=1
+    clicking_allowed = True
+
+def screenclear():
+    global clicking_allowed
+    clicking_allowed = False
+    for tile in tiles:
+        tile.clear()
+        tile.hideturtle()
+    clicking_allowed = True
 
 def quit():
     global running
@@ -114,39 +131,44 @@ def quit():
 
 def rightclick(x,y):
     """ Sätter/tar bort flaggor"""
-    for squares in tiles:
-        if (squares.xcor()-10) < x < (squares.xcor()+10) and (squares.ycor()-10) < y < (squares.ycor()+10):#Kollar vilken ruta som klickas
-            if squares.dy == 0: #Kollar om rutan ar en flagga
-                squares.shape('tileflag.gif') #Byter till ruta med flagga
-                squares.dy = 1  #Ändrar flagvärdet till sant(typ)
-            elif squares.dy == 1:#Kollar om rutan ar en flagga
-                squares.shape('tileface.gif')#Byter från ruta med flagga
-                squares.dy = 0  #Ändrar flagvärdet till falskt(typ)
+    if clicking_allowed:
+        for squares in tiles:
+            if (squares.xcor()-10) < x < (squares.xcor()+10) and (squares.ycor()-10) < y < (squares.ycor()+10):#Kollar vilken ruta som klickas
+                if squares.dy == 0: #Kollar om rutan ar en flagga
+                    squares.shape('tileflag.gif') #Byter till ruta med flagga
+                    squares.dy = 1  #Ändrar flagvärdet till sant(typ)
+                elif squares.dy == 1:#Kollar om rutan ar en flagga
+                    squares.shape('tileface.gif')#Byter från ruta med flagga
+                    squares.dy = 0  #Ändrar flagvärdet till falskt(typ)
 
 def middleclick(x,y):
+    """Gör """
     #print("mid")
-    for index, squares in enumerate(tiles):
-        if (squares.xcor()-10) < x < (squares.xcor()+10) and (squares.ycor()-10) < y < (squares.ycor()+10):
-            #print(squares.shape())
-            for i in squares.shape(): #Går igenom namnet på texturen vilket är en str
-                if i in "12345678":
-                    print(i)
-                    middle_cl_calc(index,int(i))
+    if clicking_allowed:
+        for index, squares in enumerate(tiles):
+            if (squares.xcor()-10) < x < (squares.xcor()+10) and (squares.ycor()-10) < y < (squares.ycor()+10):
+                #print(squares.shape())
+                for i in squares.shape(): #Går igenom namnet på texturen vilket är en str
+                    if i in "12345678":
+                        print(i)
+                        middle_cl_calc(index,int(i))
 
 def leftclick(x,y):
-    for i in range(len(tiles)):
-        if (tiles[i].xcor()-10) < x < (tiles[i].xcor()+10) and (tiles[i].ycor()-10) < y < (tiles[i].ycor()+10): #Kollar vilken ruta som klickas
-            if tiles[i].dy == 0:
-                if tiles[i].dx == 1: #Kollar om rutan är en bomb
-                    tiles[i].shape("mine.gif") #Visar bomb grafiken
-                    tiles[i].dy = 2
-                    for titties in tiles:
-                        titties.dy = 2
-                else:
-                    #print(blocktype(i))
-                    tile_determiner(i)
-    if(button.xcor()-10) < x < (button.xcor()+10) and (button.ycor()-10) < y < (button.ycor()+10):
-        restart()
+    """ Gör allt som händer när man vänsteklickar"""
+    if clicking_allowed:
+        for i in range(len(tiles)):
+            if (tiles[i].xcor()-10) < x < (tiles[i].xcor()+10) and (tiles[i].ycor()-10) < y < (tiles[i].ycor()+10): #Kollar vilken ruta som klickas
+                if tiles[i].dy == 0:
+                    if tiles[i].dx == 1: #Kollar om rutan är en bomb
+                        tiles[i].shape("mine.gif") #Visar bomb grafiken
+                        tiles[i].dy = 2
+                        for titties in tiles:
+                            titties.dy = 2
+                    else:
+                        #print(blocktype(i))
+                        tile_determiner(i)
+        if(button.xcor()-10) < x < (button.xcor()+10) and (button.ycor()-10) < y < (button.ycor()+10):
+            restart()
 """
 
 måste kolla rutorna runtom för minor
@@ -598,3 +620,4 @@ while True:
             tile_determiner(num)
             tiles_to_be_clicked.remove(num)
         app.update()
+    screenclear()
