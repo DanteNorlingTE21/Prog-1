@@ -26,6 +26,10 @@ class Tiles:
         FLAG:{self.flag_status}
         TEXTURE{self.texture}"""
 
+    def surface_return(self):
+        local_tile = pygame.image.load(self.texture)
+        return local_tile
+
 
 pygame.init()
 
@@ -40,12 +44,18 @@ test_tile = Tiles(0, 0)
 print(test_tile)
 
 tile_list = []
+tile_1 = Tiles(xcor=0, ycor=0)
+tile_2 = Tiles(xcor=20, ycor=20)
+tile_list.append(tile_1)
+tile_list.append(tile_2)
 
 
 def draw(tile_pos):  # Gör allt ritande för varje frame
     win.fill((255, 0, 0))
 
     win.blit(tile, tile_pos)
+    for i in tile_list:
+        win.blit(i.surface_return(), (i.xcor, i.ycor))
 
 
 running = True
