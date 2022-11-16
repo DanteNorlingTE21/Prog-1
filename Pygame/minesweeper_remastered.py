@@ -1,6 +1,12 @@
 import pygame
 import random
 
+""" TODO:
+cooldown for click functions
+left and middle click
+
+"""
+
 
 class Tiles:
     def __init__(
@@ -75,7 +81,26 @@ def middle_click(cords=tuple):
 
 
 def right_click(cords=tuple):
-    pass
+    mouse_x = cords[0]
+    mouse_y = cords[1]
+
+    for lists in list_of_tiles:
+        for local_tile in lists:
+            local_tuple = local_tile.coord_tuple()
+            local_x = local_tuple[0]
+            local_y = local_tuple[1]
+            if (local_x + 20 > mouse_x >= local_x) and (
+                local_y + 20 > mouse_y >= local_y
+            ):
+
+                if not local_tile.clicked_on:
+                    if not local_tile.flag:
+                        local_tile.flag = True
+                        local_tile.texture = "tileflag.gif"
+
+                    elif local_tile.flag:
+                        local_tile.flag = False
+                        local_tile.texture = "tileface.gif"
 
 
 def draw():
@@ -94,10 +119,12 @@ win = pygame.display.set_mode((20 * int(dimensions[0]), 20 * int(dimensions[1]))
 
 list_of_tiles = startup(int(dimensions[0]), int(dimensions[1]), mines)
 
+clock = pygame.time.Clock()
 
 running = True
 
 while running:
+    clock.tick(30)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -105,6 +132,12 @@ while running:
     mouse_status = pygame.mouse.get_pressed()
     if mouse_status[0]:
         left_click(pygame.mouse.get_pos())
+        draw()
+        # pygame.time.delay(200)
+    if mouse_status[2]:
+        right_click(pygame.mouse.get_pos())
+        draw()
+        # pygame.time.delay(200)
 
     # print(pygame.mouse.get_pos())
     # print(pygame.mouse.get_pressed())
