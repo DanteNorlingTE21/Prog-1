@@ -74,11 +74,13 @@ def startup(x=3, y=3, number_of_mines=int):
 # cords[0] = x cords[1] = y
 
 
-def left_click(cords=tuple, tile_to_be_clicked=None):
-    print(cords)
-
+def left_click(cords=None, tile_to_be_clicked=None):
+    """Cords is tuple, tile_to_be_clicked is Tiles"""
+    # print(cords)
     if tile_to_be_clicked is not None:
         cords = tile_to_be_clicked.coord_tuple()
+    if cords is None:
+        return 0
     mouse_x = cords[0]  # HIT detection \/
     mouse_y = cords[1]  # ______________|
     global now  # __may_be_unnecesar____|
@@ -103,7 +105,25 @@ def left_click(cords=tuple, tile_to_be_clicked=None):
 
 
 def middle_click(cords=tuple):
-    pass
+    mouse_x = cords[0]  # HIT detection \/
+    mouse_y = cords[1]  # ______________|
+    global now  # __may_be_unnecesar____|
+    global MOUSE_COOLDOWN  # ___________|
+    if (pygame.time.get_ticks() - now) >= MOUSE_COOLDOWN:
+        for lists in list_of_tiles:  # _|
+            for local_tile in lists:  # |
+                local_tuple = local_tile.coord_tuple()
+                local_x = local_tuple[0]
+                local_y = local_tuple[1]
+                if (local_x + 20 > mouse_x >= local_x) and (
+                    local_y + 20 > mouse_y >= local_y
+                ):
+                    # END OF HIT DETECTION _______
+                    if local_tile.clicked_on:  # Check if clicked on
+                        print(local_tile.coord_tuple())
+                        for i in local_tile.texture:
+                            if i in "012345678":
+                                click_around(int(i), local_tile)
 
 
 def right_click(cords=tuple):
@@ -131,6 +151,81 @@ def right_click(cords=tuple):
                             local_tile.flag = False
                             local_tile.texture = "tileface.gif"
         now = pygame.time.get_ticks()
+
+
+def click_around(number=int, local_tile=Tiles):
+    neighbour_flags = 0
+    check_left = False
+    check_right = False
+    check_up = False
+    check_down = False
+    if local_tile.xcor > 0:
+        check_left = True
+    if local_tile.xcor + 1 < len(list_of_tiles):
+        check_right = True
+    if local_tile.ycor > 0:
+        check_up = True
+    if local_tile.ycor + 1 < len(list_of_tiles[local_tile.xcor]):
+        check_down = True
+
+    if check_left:
+        if list_of_tiles[local_tile.xcor - 1][local_tile.ycor].flag:
+            neighbour_flags += 1
+    if check_right:
+        if list_of_tiles[local_tile.xcor + 1][local_tile.ycor].flag:
+            neighbour_flags += 1
+    if check_up:
+        if list_of_tiles[local_tile.xcor][local_tile.ycor - 1].flag:
+            neighbour_flags += 1
+    if check_down:
+        if list_of_tiles[local_tile.xcor][local_tile.ycor + 1].flag:
+            neighbour_flags += 1
+    if check_up and check_left:
+        if list_of_tiles[local_tile.xcor - 1][local_tile.ycor - 1].flag:
+            neighbour_flags += 1
+    if check_up and check_right:
+        if list_of_tiles[local_tile.xcor + 1][local_tile.ycor - 1].flag:
+            neighbour_flags += 1
+    if check_down and check_left:
+        if list_of_tiles[local_tile.xcor - 1][local_tile.ycor + 1].flag:
+            neighbour_flags += 1
+    if check_down and check_right:
+        if list_of_tiles[local_tile.xcor + 1][local_tile.ycor + 1].flag:
+            neighbour_flags += 1
+    print("neighbourflags", neighbour_flags)
+    if neighbour_flags == number:
+        if check_left:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor - 1][local_tile.ycor]
+            )
+        if check_right:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor + 1][local_tile.ycor]
+            )
+        if check_up:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor][local_tile.ycor - 1]
+            )
+        if check_down:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor][local_tile.ycor + 1]
+            )
+        if check_left and check_up:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor - 1][local_tile.ycor - 1]
+            )
+        if check_left and check_down:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor - 1][local_tile.ycor + 1]
+            )
+        if check_right and check_up:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor + 1][local_tile.ycor - 1]
+            )
+        if check_right and check_down:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor + 1][local_tile.ycor + 1]
+            )
 
 
 def show_face(local_tile=Tiles):
@@ -174,6 +269,39 @@ def show_face(local_tile=Tiles):
             neighbour_mines += 1
     local_tile.texture = f"tile{neighbour_mines}.gif"
     local_tile.clicked_on = True
+    if neighbour_mines == 0:
+        if check_left:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor - 1][local_tile.ycor]
+            )
+        if check_right:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor + 1][local_tile.ycor]
+            )
+        if check_up:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor][local_tile.ycor - 1]
+            )
+        if check_down:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor][local_tile.ycor + 1]
+            )
+        if check_left and check_up:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor - 1][local_tile.ycor - 1]
+            )
+        if check_left and check_down:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor - 1][local_tile.ycor + 1]
+            )
+        if check_right and check_up:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor + 1][local_tile.ycor - 1]
+            )
+        if check_right and check_down:
+            tiles_to_be_clicked.append(
+                list_of_tiles[local_tile.xcor + 1][local_tile.ycor + 1]
+            )
 
 
 def draw():
@@ -194,13 +322,12 @@ MOUSE_COOLDOWN = 150
 now = pygame.time.get_ticks()
 
 list_of_tiles = startup(int(dimensions[0]), int(dimensions[1]), mines)
+tiles_to_be_clicked = []
 
-clock = pygame.time.Clock()
 
 running = True
 
 while running:
-    clock.tick(30)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -210,11 +337,15 @@ while running:
         left_click(pygame.mouse.get_pos())
         draw()
         # pygame.time.delay(200)
+    if mouse_status[1]:
+        middle_click(pygame.mouse.get_pos())
     if mouse_status[2]:
         right_click(pygame.mouse.get_pos())
         draw()
         # pygame.time.delay(200)
-
+    for local_tile in tiles_to_be_clicked:
+        left_click(tile_to_be_clicked=local_tile)
+        tiles_to_be_clicked.remove(local_tile)
     # print(pygame.mouse.get_pos())
     # print(pygame.mouse.get_pressed())
     pygame.display.update()
