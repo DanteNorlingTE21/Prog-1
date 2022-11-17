@@ -7,6 +7,8 @@ left and middle click
 
 """
 
+# FIXA COOLDOWN
+
 
 class Tiles:
     def __init__(
@@ -72,8 +74,32 @@ def startup(x=3, y=3, number_of_mines=int):
 # cords[0] = x cords[1] = y
 
 
-def left_click(cords=tuple):
+def left_click(cords=tuple, tile_to_be_clicked=None):
     print(cords)
+
+    if tile_to_be_clicked is not None:
+        cords = tile_to_be_clicked.coord_tuple()
+    mouse_x = cords[0]  # HIT detection \/
+    mouse_y = cords[1]  # ______________|
+    global now  # __may_be_unnecesar____|
+    global MOUSE_COOLDOWN  # ___________|
+    if (pygame.time.get_ticks() - now) >= MOUSE_COOLDOWN:
+        for lists in list_of_tiles:  # _|
+            for local_tile in lists:  # |
+                local_tuple = local_tile.coord_tuple()
+                local_x = local_tuple[0]
+                local_y = local_tuple[1]
+                if (local_x + 20 > mouse_x >= local_x) and (
+                    local_y + 20 > mouse_y >= local_y
+                ):
+                    # END OF HIT DETECTION _______
+                    if not local_tile.clicked_on:  # Check if clicked on
+                        if not local_tile.flag:
+                            if local_tile.mine:
+                                local_tile.texture = "mine.gif"
+                                local_tile.clicked_on = True
+                            else:
+                                show_face(local_tile)
 
 
 def middle_click(cords=tuple):
@@ -81,26 +107,73 @@ def middle_click(cords=tuple):
 
 
 def right_click(cords=tuple):
-    mouse_x = cords[0]
-    mouse_y = cords[1]
+    """Does the right click functionality"""
+    mouse_x = cords[0]  # HIT detection \/
+    mouse_y = cords[1]  # ______________|
+    global now  # ______________________|
+    global MOUSE_COOLDOWN  # ___________|
+    if (pygame.time.get_ticks() - now) >= MOUSE_COOLDOWN:
+        for lists in list_of_tiles:  # _|
+            for local_tile in lists:  # |
+                local_tuple = local_tile.coord_tuple()
+                local_x = local_tuple[0]
+                local_y = local_tuple[1]
+                if (local_x + 20 > mouse_x >= local_x) and (
+                    local_y + 20 > mouse_y >= local_y
+                ):
+                    # END OF HIT DETECTION _______
+                    if not local_tile.clicked_on:  # Check if clicked on
+                        if not local_tile.flag:  # DO STUFF
+                            local_tile.flag = True
+                            local_tile.texture = "tileflag.gif"
 
-    for lists in list_of_tiles:
-        for local_tile in lists:
-            local_tuple = local_tile.coord_tuple()
-            local_x = local_tuple[0]
-            local_y = local_tuple[1]
-            if (local_x + 20 > mouse_x >= local_x) and (
-                local_y + 20 > mouse_y >= local_y
-            ):
+                        elif local_tile.flag:
+                            local_tile.flag = False
+                            local_tile.texture = "tileface.gif"
+        now = pygame.time.get_ticks()
 
-                if not local_tile.clicked_on:
-                    if not local_tile.flag:
-                        local_tile.flag = True
-                        local_tile.texture = "tileflag.gif"
 
-                    elif local_tile.flag:
-                        local_tile.flag = False
-                        local_tile.texture = "tileface.gif"
+def show_face(local_tile=Tiles):
+    neighbour_mines = 0
+    check_left = False
+    check_right = False
+    check_up = False
+    check_down = False
+    if local_tile.xcor > 0:
+        check_left = True
+    if local_tile.xcor + 1 < len(list_of_tiles):
+        check_right = True
+    if local_tile.ycor > 0:
+        check_up = True
+    if local_tile.ycor + 1 < len(list_of_tiles[local_tile.xcor]):
+        check_down = True
+
+    if check_left:
+        if list_of_tiles[local_tile.xcor - 1][local_tile.ycor].mine:
+            neighbour_mines += 1
+    if check_right:
+        if list_of_tiles[local_tile.xcor + 1][local_tile.ycor].mine:
+            neighbour_mines += 1
+    if check_up:
+        if list_of_tiles[local_tile.xcor][local_tile.ycor - 1].mine:
+            neighbour_mines += 1
+    if check_down:
+        if list_of_tiles[local_tile.xcor][local_tile.ycor + 1].mine:
+            neighbour_mines += 1
+    if check_up and check_left:
+        if list_of_tiles[local_tile.xcor - 1][local_tile.ycor - 1].mine:
+            neighbour_mines += 1
+    if check_up and check_right:
+        if list_of_tiles[local_tile.xcor + 1][local_tile.ycor - 1].mine:
+            neighbour_mines += 1
+    if check_down and check_left:
+        if list_of_tiles[local_tile.xcor - 1][local_tile.ycor + 1].mine:
+            neighbour_mines += 1
+    if check_down and check_right:
+        if list_of_tiles[local_tile.xcor + 1][local_tile.ycor + 1].mine:
+            neighbour_mines += 1
+    local_tile.texture = f"tile{neighbour_mines}.gif"
+    local_tile.clicked_on = True
 
 
 def draw():
@@ -116,6 +189,9 @@ mines = int(input("NUMBER OF MINES:"))
 
 pygame.init()
 win = pygame.display.set_mode((20 * int(dimensions[0]), 20 * int(dimensions[1])))
+
+MOUSE_COOLDOWN = 150
+now = pygame.time.get_ticks()
 
 list_of_tiles = startup(int(dimensions[0]), int(dimensions[1]), mines)
 
