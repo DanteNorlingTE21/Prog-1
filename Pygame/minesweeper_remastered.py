@@ -283,6 +283,7 @@ def show_face(local_tile=Tiles):
 
 
 def draw():
+    """updates the screen (is laggy and is thus only ran when events happen that would change the look of the screen)"""
     win.fill((160, 160, 160))
     for x in list_of_tiles:
         for y in x:
@@ -302,6 +303,7 @@ now = pygame.time.get_ticks()
 list_of_tiles = startup(int(dimensions[0]), int(dimensions[1]), mines)
 tiles_to_be_clicked = []
 
+draw()
 
 running = True
 
@@ -309,7 +311,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    draw()
+    pygame.display.flip()
     mouse_status = pygame.mouse.get_pressed()
     if mouse_status[0] and not mouse_status[2]:
         left_click(pygame.mouse.get_pos())
@@ -317,13 +319,16 @@ while running:
         # pygame.time.delay(200)
     if mouse_status[1] or (mouse_status[0] and mouse_status[2]):
         middle_click(pygame.mouse.get_pos())
+        draw()
     if mouse_status[2] and not mouse_status[0]:
         right_click(pygame.mouse.get_pos())
         draw()
         # pygame.time.delay(200)
-    for local_tile in tiles_to_be_clicked:
-        left_click(tile_to_be_clicked=local_tile)
-        tiles_to_be_clicked.remove(local_tile)
+    if len(tiles_to_be_clicked) > 0:
+        for local_tile in tiles_to_be_clicked:
+            left_click(tile_to_be_clicked=local_tile)
+            tiles_to_be_clicked.remove(local_tile)
+        draw()
     # print(pygame.mouse.get_pos())
     # print(pygame.mouse.get_pressed())
     pygame.display.update()
