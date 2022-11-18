@@ -1,5 +1,6 @@
 import pygame
 import random
+from math import floor
 
 """ TODO:
 cooldown for click functions
@@ -50,6 +51,10 @@ class Tiles:
         return local_tile
 
 
+def coord_round(x):
+    return floor(x / 20)
+
+
 def startup(x=3, y=3, number_of_mines=int):
     """returns a list(x cord list) with y_lists that contain the tiles. Also makes some of them mines"""
 
@@ -76,54 +81,34 @@ def startup(x=3, y=3, number_of_mines=int):
 
 def left_click(cords=None, tile_to_be_clicked=None):
     """Cords is tuple, tile_to_be_clicked is Tiles"""
-    # print(cords)
+    print(cords)
     if tile_to_be_clicked is not None:
         cords = tile_to_be_clicked.coord_tuple()
     if cords is None:
         return 0
     mouse_x = cords[0]  # HIT detection \/
     mouse_y = cords[1]  # ______________|
-    global now  # __may_be_unnecesar____|
-    global MOUSE_COOLDOWN  # ___________|
-    if (pygame.time.get_ticks() - now) >= MOUSE_COOLDOWN:
-        for lists in list_of_tiles:  # _|
-            for local_tile in lists:  # |
-                local_tuple = local_tile.coord_tuple()
-                local_x = local_tuple[0]
-                local_y = local_tuple[1]
-                if (local_x + 20 > mouse_x >= local_x) and (
-                    local_y + 20 > mouse_y >= local_y
-                ):
-                    # END OF HIT DETECTION _______
-                    if not local_tile.clicked_on:  # Check if clicked on
-                        if not local_tile.flag:
-                            if local_tile.mine:
-                                local_tile.texture = "mine.gif"
-                                local_tile.clicked_on = True
-                            else:
-                                show_face(local_tile)
+    local_tile = list_of_tiles[coord_round(mouse_x)][coord_round(mouse_y)]
+    # END OF HIT DETECTION _______
+    if not local_tile.clicked_on:  # Check if clicked on
+        if not local_tile.flag:
+            if local_tile.mine:
+                local_tile.texture = "mine.gif"
+                local_tile.clicked_on = True
+            else:
+                show_face(local_tile)
 
 
 def middle_click(cords=tuple):
     mouse_x = cords[0]  # HIT detection \/
     mouse_y = cords[1]  # ______________|
-    global now  # __may_be_unnecesar____|
-    global MOUSE_COOLDOWN  # ___________|
-    if (pygame.time.get_ticks() - now) >= MOUSE_COOLDOWN:
-        for lists in list_of_tiles:  # _|
-            for local_tile in lists:  # |
-                local_tuple = local_tile.coord_tuple()
-                local_x = local_tuple[0]
-                local_y = local_tuple[1]
-                if (local_x + 20 > mouse_x >= local_x) and (
-                    local_y + 20 > mouse_y >= local_y
-                ):
-                    # END OF HIT DETECTION _______
-                    if local_tile.clicked_on:  # Check if clicked on
-                        print(local_tile.coord_tuple())
-                        for i in local_tile.texture:
-                            if i in "012345678":
-                                click_around(int(i), local_tile)
+    local_tile = list_of_tiles[coord_round(mouse_x)][coord_round(mouse_y)]
+    # END OF HIT DETECTION _______
+    if local_tile.clicked_on:  # Check if clicked on
+        print(local_tile.coord_tuple())
+        for i in local_tile.texture:
+            if i in "012345678":
+                click_around(int(i), local_tile)
 
 
 def right_click(cords=tuple):
@@ -133,23 +118,16 @@ def right_click(cords=tuple):
     global now  # ______________________|
     global MOUSE_COOLDOWN  # ___________|
     if (pygame.time.get_ticks() - now) >= MOUSE_COOLDOWN:
-        for lists in list_of_tiles:  # _|
-            for local_tile in lists:  # |
-                local_tuple = local_tile.coord_tuple()
-                local_x = local_tuple[0]
-                local_y = local_tuple[1]
-                if (local_x + 20 > mouse_x >= local_x) and (
-                    local_y + 20 > mouse_y >= local_y
-                ):
-                    # END OF HIT DETECTION _______
-                    if not local_tile.clicked_on:  # Check if clicked on
-                        if not local_tile.flag:  # DO STUFF
-                            local_tile.flag = True
-                            local_tile.texture = "tileflag.gif"
+        local_tile = list_of_tiles[coord_round(mouse_x)][coord_round(mouse_y)]
+        # END OF HIT DETECTION _______
+        if not local_tile.clicked_on:  # Check if clicked on
+            if not local_tile.flag:  # DO STUFF
+                local_tile.flag = True
+                local_tile.texture = "tileflag.gif"
 
-                        elif local_tile.flag:
-                            local_tile.flag = False
-                            local_tile.texture = "tileface.gif"
+            elif local_tile.flag:
+                local_tile.flag = False
+                local_tile.texture = "tileface.gif"
         now = pygame.time.get_ticks()
 
 
