@@ -333,13 +333,13 @@ while running:
             running = False
     draw()
     mouse_status = pygame.mouse.get_pressed()
-    if mouse_status[0]:
+    if mouse_status[0] and not mouse_status[2]:
         left_click(pygame.mouse.get_pos())
         draw()
         # pygame.time.delay(200)
-    if mouse_status[1]:
+    if mouse_status[1] or (mouse_status[0] and mouse_status[2]):
         middle_click(pygame.mouse.get_pos())
-    if mouse_status[2]:
+    if mouse_status[2] and not mouse_status[0]:
         right_click(pygame.mouse.get_pos())
         draw()
         # pygame.time.delay(200)
