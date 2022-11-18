@@ -95,6 +95,9 @@ def left_click(cords=None, tile_to_be_clicked=None):
             if local_tile.mine:
                 local_tile.texture = "mine.gif"
                 local_tile.clicked_on = True
+                for list in list_of_tiles:
+                    for tile in list:
+                        tile.clicked_on = True
             else:
                 show_face(local_tile)
 
