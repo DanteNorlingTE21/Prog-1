@@ -2,13 +2,15 @@ import pygame
 import random
 from math import floor
 
-""" TODO:
-cooldown for click functions
-left and middle click
+"""New changes:
+removed for loop usage in hit-detecting
+made an if-statement that only looped through tiles_to_be_clicked if it was empty
+made it so that draw only runs when a tile is clicked on and not every frame
+made a lose condition
+
+draw became really slow around the extreme sized boards when it had to redraw 2500 tiles every frame
 
 """
-
-# FIXA COOLDOWN
 
 
 class Tiles:
