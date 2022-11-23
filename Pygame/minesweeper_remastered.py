@@ -81,6 +81,16 @@ def startup(x=3, y=3, number_of_mines=int):
 # cords[0] = x cords[1] = y
 
 
+def restart():
+    global list_of_tiles
+    global dimensions
+    global mines
+    for i in list_of_tiles:
+        list_of_tiles.remove(i)
+    list_of_tiles = startup(int(dimensions[0]), int(dimensions[1]), mines)
+    draw()
+
+
 def left_click(cords=None, tile_to_be_clicked=None):
     """Cords is tuple, tile_to_be_clicked is Tiles"""
     print(cords)
@@ -90,18 +100,39 @@ def left_click(cords=None, tile_to_be_clicked=None):
         return 0
     mouse_x = cords[0]  # HIT detection \/
     mouse_y = cords[1]  # ______________|
-    local_tile = list_of_tiles[coord_round(mouse_x)][coord_round(mouse_y)]
-    # END OF HIT DETECTION _______
-    if not local_tile.clicked_on:  # Check if clicked on
-        if not local_tile.flag:
-            if local_tile.mine:
-                local_tile.texture = "mine.gif"
-                local_tile.clicked_on = True
-                for list in list_of_tiles:
-                    for tile in list:
-                        tile.clicked_on = True
-            else:
-                show_face(local_tile)
+    global now  # ______________________|
+    global MOUSE_COOLDOWN  # ___________|
+    if (pygame.time.get_ticks() - now) >= MOUSE_COOLDOWN:
+        local_tile = list_of_tiles[coord_round(mouse_x)][coord_round(mouse_y)]
+        # END OF HIT DETECTION _______
+        if not local_tile.clicked_on:  # Check if clicked on
+            if not local_tile.flag:
+                if local_tile.mine:
+                    local_tile.texture = "mine.gif"
+                    local_tile.clicked_on = True
+                    for list in list_of_tiles:
+                        for tile in list:
+                            tile.clicked_on = True
+                    restart()
+
+                else:
+                    show_face(local_tile)
+    elif tile_to_be_clicked is not None:
+        local_tile = list_of_tiles[coord_round(mouse_x)][coord_round(mouse_y)]
+        # END OF HIT DETECTION _______
+        if not local_tile.clicked_on:  # Check if clicked on
+            if not local_tile.flag:
+                if local_tile.mine:
+                    local_tile.texture = "mine.gif"
+                    local_tile.clicked_on = True
+                    for list in list_of_tiles:
+                        for tile in list:
+                            tile.clicked_on = True
+                    restart()
+
+                else:
+                    show_face(local_tile)
+        now = pygame.time.get_ticks()
 
 
 def middle_click(cords=tuple):
@@ -287,6 +318,14 @@ def show_face(local_tile=Tiles):
             )
 
 
+def resize(dx, dy):
+    global dimensions
+    global win
+    x = int(dimensions[0]) + dx
+    y = int(dimensions[1]) + dy
+    win = pygame.display.set_mode((20 * x + 20, 20 * y + 20), pygame.RESIZABLE)
+
+
 def draw():
     """updates the screen (is laggy and is thus only ran when events happen that would change the look of the screen)"""
     win.fill((160, 160, 160))
@@ -300,7 +339,9 @@ mines = int(input("NUMBER OF MINES:"))
 
 
 pygame.init()
-win = pygame.display.set_mode((20 * int(dimensions[0]), 20 * int(dimensions[1])))
+win = pygame.display.set_mode(
+    (20 * int(dimensions[0]) + 20, 20 * int(dimensions[1]) + 20), pygame.RESIZABLE
+)
 
 MOUSE_COOLDOWN = 150
 now = pygame.time.get_ticks()
@@ -308,7 +349,10 @@ now = pygame.time.get_ticks()
 list_of_tiles = startup(int(dimensions[0]), int(dimensions[1]), mines)
 tiles_to_be_clicked = []
 
+resize(0, 0)
+
 draw()
+
 
 running = True
 
