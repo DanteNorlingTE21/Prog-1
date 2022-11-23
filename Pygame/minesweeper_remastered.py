@@ -224,11 +224,11 @@ def click_around(number=int, local_tile=Tiles):
     check_down = False
     if local_tile.xcor > 0:
         check_left = True
-    if local_tile.xcor + 1 < len(list_of_tiles):
+    if local_tile.xcor + 2 < len(list_of_tiles):
         check_right = True
     if local_tile.ycor > 0:
         check_up = True
-    if local_tile.ycor + 1 < len(list_of_tiles[local_tile.xcor]):
+    if local_tile.ycor + 2 < len(list_of_tiles[local_tile.xcor]):
         check_down = True
 
     if check_left:
@@ -391,9 +391,10 @@ def draw():
 dimensions = input("X * Y?:").split()  # takes two dimension inputs x by y
 mines = int(input("NUMBER OF MINES:"))
 
-if (int(dimensions[0]) < 2) or (int(dimensions[1]) < 2):
-    dimensions[0] = 2
-    dimensions[1] = 2
+
+if (int(dimensions[0]) < 5) or (int(dimensions[1]) < 5):
+    dimensions[0] = 5
+    dimensions[1] = 5
 
 if mines > int(dimensions[0]) * int(dimensions[1]):
     mines = int(dimensions[0]) * int(dimensions[1])
@@ -440,5 +441,5 @@ while running:
         draw()
     # print(pygame.mouse.get_pos())
     # print(pygame.mouse.get_pressed())
-    print(pygame.time.get_ticks())
+
     pygame.display.update()
