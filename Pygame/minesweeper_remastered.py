@@ -129,12 +129,14 @@ def restart():
     global list_of_tiles
     global dimensions
     global mines
+    global flag_counter
     for i in list_of_tiles:
         list_of_tiles.remove(i)  # removes everything from list_of_tiles
     list_of_tiles = startup(
         int(dimensions[0]), int(dimensions[1]), mines
     )  # Reruns startup with dimensions and mines
-    draw()
+    flag_counter = mines
+    flag_counter_display(0)
 
 
 def left_click(cords=None, tile_to_be_clicked=None):
@@ -227,10 +229,11 @@ def right_click(cords=tuple):
                 if not local_tile.flag:  # Check if flag
                     local_tile.flag = True  # Makes it a flag
                     local_tile.texture = "tileflag.gif"
-
+                    flag_counter_display(-1)
                 elif local_tile.flag:  # Check if flag
                     local_tile.flag = False  # Removes flag
                     local_tile.texture = "tileface.gif"
+                    flag_counter_display(1)
             now = pygame.time.get_ticks()  # Makes now now to reset cooldown
 
 
@@ -428,6 +431,27 @@ def draw():
             # y.coord_tuple() returns the coordinates
 
 
+def flag_counter_display(delta_mine):
+    global list_of_tiles
+    global flag_counter
+    flag_counter += delta_mine
+    if flag_counter >= 999:
+        list_of_tiles[0][int(dimensions[1])].texture = "tile9.gif"
+        list_of_tiles[1][int(dimensions[1])].texture = "tile9.gif"
+        list_of_tiles[2][int(dimensions[1])].texture = "tile9.gif"
+    else:
+        hundreds = flag_counter // 100
+        print(hundreds)
+        tens = (flag_counter - hundreds * 100) // 10
+        print(tens)
+        singles = flag_counter - hundreds * 100 - tens * 10
+        print(singles)
+        list_of_tiles[0][int(dimensions[1])].texture = f"tile{hundreds}.gif"
+        list_of_tiles[1][int(dimensions[1])].texture = f"tile{tens}.gif"
+        list_of_tiles[2][int(dimensions[1])].texture = f"tile{singles}.gif"
+    draw()
+
+
 """
 Defenitions end here and the code begins
 
@@ -445,6 +469,7 @@ if (int(dimensions[0]) < 5) or (int(dimensions[1]) < 5):
 # Sets max number of mines to x*y
 if mines > int(dimensions[0]) * int(dimensions[1]):
     mines = int(dimensions[0]) * int(dimensions[1])
+flag_counter = mines
 
 pygame.init()  # Initiates pygame
 # Creates screen
@@ -463,7 +488,7 @@ list_of_tiles = startup(int(dimensions[0]), int(dimensions[1]), mines)
 tiles_to_be_clicked = []
 
 # Updates screen
-draw()
+flag_counter_display(0)
 
 
 running = True
