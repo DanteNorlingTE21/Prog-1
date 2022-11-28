@@ -49,13 +49,16 @@ class Tiles:
 class Button:
     """The object class of the surrounding buttons and empty space"""
 
-    def __init__(self, texture="blank.gif", dx=0, dy=0, xcor=0, ycor=0, restart=False):
+    def __init__(
+        self, texture="blank.gif", dx=0, dy=0, xcor=0, ycor=0, restart=False, dm=0
+    ):
         self.texture = texture
         self.dx = dx
         self.dy = dy
         self.xcor = xcor
         self.ycor = ycor
         self.restart = restart
+        self.dm = dm
 
     def coord_tuple(self):
         """Same as the Tiles"""
@@ -112,12 +115,17 @@ def startup(x=3, y=3, number_of_mines=int):
         right_row.append(blank)  # Appends local buttons
 
     # puts on the right textures for the buttons
+
     right_row[-1].texture = "restart.gif"
     right_row[-1].restart = True
     right_row[-2].texture = "plus_y.gif"
     right_row[-2].dy = 1
     right_row[-3].texture = "minus_y.gif"
     right_row[-3].dy = -1
+    right_row[-4].texture = "plus_mine.gif"
+    right_row[-4].dm = 1
+    right_row[-5].texture = "minus_mine.gif"
+    right_row[-5].dm = -1
     x_list.append(right_row)  # adds the right row to the list
 
     return x_list
@@ -132,9 +140,8 @@ def restart():
     global flag_counter
     for i in list_of_tiles:
         list_of_tiles.remove(i)  # removes everything from list_of_tiles
-    list_of_tiles = startup(
-        int(dimensions[0]), int(dimensions[1]), mines
-    )  # Reruns startup with dimensions and mines
+    list_of_tiles = startup(int(dimensions[0]), int(dimensions[1]), mines)
+    # Reruns startup with dimensions and mines
     flag_counter = mines
     flag_counter_display(0)
 
@@ -181,6 +188,8 @@ def left_click(cords=None, tile_to_be_clicked=None):
                         local_tile.dy == -1 and len(list_of_tiles[0]) == 6
                     ):  # Checks if board is big enough to shrink
                         resize(local_tile.dx, local_tile.dy)  # resizes board
+            elif (local_tile.dm) != 0:
+                add_mine(local_tile.dm)
 
     elif tile_to_be_clicked is not None:
         local_tile = list_of_tiles[coord_round(mouse_x)][coord_round(mouse_y)]
@@ -432,34 +441,74 @@ def draw():
 
 
 def flag_counter_display(delta_mine):
+    """updates the display in the corner and the whole display
+    delta_mine is how many flags you place/remove (+/- 1)"""
     global list_of_tiles
     global flag_counter
     flag_counter += delta_mine
     if flag_counter >= 999:
+        # first row, bottom
         list_of_tiles[0][int(dimensions[1])].texture = "tile9.gif"
+        # second row,bottom
         list_of_tiles[1][int(dimensions[1])].texture = "tile9.gif"
+        # third row, bottom
         list_of_tiles[2][int(dimensions[1])].texture = "tile9.gif"
     else:
         hundreds = flag_counter // 100
-        print(hundreds)
         tens = (flag_counter - hundreds * 100) // 10
-        print(tens)
         singles = flag_counter - hundreds * 100 - tens * 10
-        print(singles)
-        list_of_tiles[0][int(dimensions[1])].texture = f"tile{hundreds}.gif"
-        list_of_tiles[1][int(dimensions[1])].texture = f"tile{tens}.gif"
-        list_of_tiles[2][int(dimensions[1])].texture = f"tile{singles}.gif"
+
+        if hundreds == 0:
+            list_of_tiles[0][int(dimensions[1])].texture = "tile0_1.gif"
+        else:
+            list_of_tiles[0][int(dimensions[1])].texture = f"tile{hundreds}.gif"
+        if tens == 0:
+            list_of_tiles[1][int(dimensions[1])].texture = "tile0_1.gif"
+        else:
+            list_of_tiles[1][int(dimensions[1])].texture = f"tile{tens}.gif"
+        if singles == 0:
+            list_of_tiles[2][int(dimensions[1])].texture = "tile0_1.gif"
+        else:
+            list_of_tiles[2][int(dimensions[1])].texture = f"tile{singles}.gif"
     draw()
+
+
+def add_mine(delta_mine):
+    global dimensions
+    global mines
+    if (mines != int(dimensions[0]) * int(dimensions[1])) and delta_mine == 1:
+        mines += delta_mine
+        restart()
+        time.sleep(0.2)
+    elif (mines > 0) and (delta_mine == -1):
+        mines = mines + delta_mine
+        restart()
+        time.sleep(0.2)
 
 
 """
 Defenitions end here and the code begins
 
 """
-
-dimensions = input("X * Y?:").split()  # takes two dimension inputs x by y
-mines = int(input("NUMBER OF MINES:"))
-
+dimensions = []
+while True:
+    dimensions = input(
+        "Input width and height(separated with a space):"
+    ).split()  # takes two dimension inputs x by y
+    if len(dimensions) == 2:
+        if dimensions[0].isnumeric() and dimensions[1].isnumeric():
+            break
+        else:
+            print("Input only numbers")
+    else:
+        print("Input only width and height")
+while True:
+    mines = input("NUMBER OF MINES:")
+    if mines.isnumeric():
+        mines = int(mines)
+        break
+    else:
+        print("Input an integer")
 
 # Sets minimum size to 5X5
 if (int(dimensions[0]) < 5) or (int(dimensions[1]) < 5):
