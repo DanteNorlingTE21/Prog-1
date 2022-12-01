@@ -172,6 +172,7 @@ def left_click(cords=None, tile_to_be_clicked=None):
                             # Makes every Tile clicked preventing further play
                             for tile in list:
                                 tile.clicked_on = True
+                        pygame.mixer.music.play()
                     else:
                         show_face(
                             local_tile
@@ -521,6 +522,12 @@ if mines > int(dimensions[0]) * int(dimensions[1]):
 flag_counter = mines
 
 pygame.init()  # Initiates pygame
+
+pygame.mixer.init()
+pygame.mixer.music.load("vine-boom.mp3")
+pygame.mixer.music.set_volume(1)
+
+
 # Creates screen
 win = pygame.display.set_mode(
     (20 * int(dimensions[0]) + 20, 20 * int(dimensions[1]) + 20), pygame.RESIZABLE
