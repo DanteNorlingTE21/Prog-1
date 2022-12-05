@@ -140,6 +140,8 @@ def restart():
     global flag_counter
     for i in list_of_tiles:
         list_of_tiles.remove(i)  # removes everything from list_of_tiles
+    if mines > int(dimensions[0]) * int(dimensions[1]):
+        mines = int(dimensions[0]) * int(dimensions[1])
     list_of_tiles = startup(int(dimensions[0]), int(dimensions[1]), mines)
     # Reruns startup with dimensions and mines
     flag_counter = mines
