@@ -454,7 +454,7 @@ def flag_counter_display(delta_mine):
         list_of_tiles[1][int(dimensions[1])].texture = "tile9.gif"
         # third row, bottom
         list_of_tiles[2][int(dimensions[1])].texture = "tile9.gif"
-    else:
+    elif flag_counter >= 0:
         hundreds = flag_counter // 100
         tens = (flag_counter - hundreds * 100) // 10
         singles = flag_counter - hundreds * 100 - tens * 10
@@ -471,6 +471,9 @@ def flag_counter_display(delta_mine):
             list_of_tiles[2][int(dimensions[1])].texture = "tile0_1.gif"
         else:
             list_of_tiles[2][int(dimensions[1])].texture = f"tile{singles}.gif"
+    if flag_counter == 0:
+        if check_win():
+            list_of_tiles[int(dimensions[0])][0].texture = "w.gif"
     draw()
 
 
@@ -485,6 +488,19 @@ def add_mine(delta_mine):
         mines = mines + delta_mine
         restart()
         time.sleep(0.2)
+
+
+def check_win():
+    global mines
+    global list_of_tiles
+    local_counter = 0
+    for lists in list_of_tiles:
+        for entry in lists:
+            if isinstance(entry, Tiles):
+                if entry.flag and entry.mine:
+                    local_counter += 1
+    if local_counter == mines:
+        return True
 
 
 """
@@ -549,12 +565,12 @@ flag_counter_display(0)
 
 running = True
 
+# Main game loop
 while running:
     for event in pygame.event.get():
         # Makes x button close window
         if event.type == pygame.QUIT:
             running = False
-    pygame.display.flip()  # ----?
 
     # Get which mouse buttons are clicked
     mouse_status = pygame.mouse.get_pressed()
