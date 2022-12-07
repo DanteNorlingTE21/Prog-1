@@ -100,7 +100,27 @@ def kolla_vinst(lista=list):
 def hänga_gubbe():
     while True:
         försök = 0
-        ordlista = ["apa", "ariful", "sill", "jazz", "orangutang", "eldkastare"]
+        ordlista = [
+            "apa",
+            "ariful",
+            "sill",
+            "jazz",
+            "orangutang",
+            "eldkastare",
+            "snigel",
+            "bil",
+            "xylofon",
+            "krokodil",
+            """eddie reinhold bergstrand sunden skiftesvägen tolv""",
+            "kompilation",
+            "funktion",
+            "hampus",
+            "hund",
+            "katt",
+            "ryssland",
+            "argentina",
+            "nordkorea",
+        ]
         nuvarande_ord = random.choice(ordlista)
         bokstäver_i_ordet = packa_upp_sträng(nuvarande_ord)
         okända_bokstäver = okänd_lista(nuvarande_ord)
