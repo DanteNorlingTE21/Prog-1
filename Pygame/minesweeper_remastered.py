@@ -191,7 +191,7 @@ def left_click(cords=None, tile_to_be_clicked=None):
                         local_tile.dy == -1 and len(list_of_tiles[0]) == 6
                     ):  # Checks if board is big enough to shrink
                         resize(local_tile.dx, local_tile.dy)  # resizes board
-            elif (local_tile.dm) != 0:
+            elif local_tile.dm != 0:
                 add_mine(local_tile.dm)
 
     elif tile_to_be_clicked is not None:
@@ -482,6 +482,8 @@ def flag_counter_display(delta_mine):
 def add_mine(delta_mine):
     global dimensions
     global mines
+
+    # Changes number of mines by delta_mine then resets
     if (mines != int(dimensions[0]) * int(dimensions[1])) and delta_mine == 1:
         mines += delta_mine
         restart()
@@ -493,9 +495,12 @@ def add_mine(delta_mine):
 
 
 def check_win():
+    """Goes through all the tiles and counts all the tiles that are both bombs and flags.
+    If the number of bomb-flag-tiles is the same as the number of bombs returns True"""
     global mines
     global list_of_tiles
     local_counter = 0
+
     for lists in list_of_tiles:
         for entry in lists:
             if isinstance(entry, Tiles):
@@ -541,12 +546,13 @@ flag_counter = mines
 
 pygame.init()  # Initiates pygame
 
+# Prepares the sound
 pygame.mixer.init()
 pygame.mixer.music.load("vine-boom.mp3")
 pygame.mixer.music.set_volume(1)
 
 
-# Creates screen
+# Creates the screen
 win = pygame.display.set_mode(
     (20 * int(dimensions[0]) + 20, 20 * int(dimensions[1]) + 20), pygame.RESIZABLE
 )
