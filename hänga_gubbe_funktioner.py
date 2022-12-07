@@ -98,30 +98,34 @@ def kolla_vinst(lista=list):
 
 
 def hänga_gubbe():
-    försök = 0
-    ordlista = ["apa", "ariful", "sill", "jazz", "orangutang", "eldkastare"]
-    nuvarande_ord = random.choice(ordlista)
-    bokstäver_i_ordet = packa_upp_sträng(nuvarande_ord)
-    okända_bokstäver = okänd_lista(nuvarande_ord)
-    fel_gissningar = []
-    rätt_gissningar = []
+    while True:
+        försök = 0
+        ordlista = ["apa", "ariful", "sill", "jazz", "orangutang", "eldkastare"]
+        nuvarande_ord = random.choice(ordlista)
+        bokstäver_i_ordet = packa_upp_sträng(nuvarande_ord)
+        okända_bokstäver = okänd_lista(nuvarande_ord)
+        fel_gissningar = []
+        rätt_gissningar = []
 
-    while försök <= 5:
-        skriv_ut(okända_bokstäver, försök, fel_gissningar)
-        if kolla_vinst(okända_bokstäver):
-            print("Du vann!")
-            break
-        gissning = gissa()
-        if (not gissning in rätt_gissningar) and (not gissning in fel_gissningar):
-            for index, bokstav in enumerate(bokstäver_i_ordet):
-                if gissning == bokstav:
-                    okända_bokstäver[index] = bokstäver_i_ordet[index]
-            if not gissning in bokstäver_i_ordet:
-                print("Fel")
-                fel_gissningar.append(gissning)
-                försök += 1
+        while försök <= 5:
+            skriv_ut(okända_bokstäver, försök, fel_gissningar)
+            if kolla_vinst(okända_bokstäver):
+                print("Du vann!")
+                break
+            gissning = gissa()
+            if (not gissning in rätt_gissningar) and (not gissning in fel_gissningar):
+                for index, bokstav in enumerate(bokstäver_i_ordet):
+                    if gissning == bokstav:
+                        okända_bokstäver[index] = bokstäver_i_ordet[index]
+                if not gissning in bokstäver_i_ordet:
+                    print("Fel")
+                    fel_gissningar.append(gissning)
+                    försök += 1
+                else:
+                    rätt_gissningar.append(gissning)
             else:
-                rätt_gissningar.append(gissning)
-        else:
-            print("Du har redan försökt denna bokstav")
-    return True
+                print("Du har redan försökt denna bokstav")
+
+        starta_om = input("Vill du spela igen? (Y/N)   ").capitalize()
+        if starta_om == "N":
+            break
