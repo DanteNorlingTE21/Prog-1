@@ -1,48 +1,127 @@
 import random
 
 
-def ordlistan():
-    ordlista = [
-        "abba",
-        "sill",
-        "jazz",
-        "pruttar",
-        "ordningsregler",
-        "cowboy",
-        "jeans",
-        "jorts",
-    ]
-    return  ordlista
+def packa_upp_sträng(sträng=str):
+    lokal_lista = []
+    for i in sträng:
+        lokal_lista.append(i)
+    return lokal_lista
 
 
-def välj_ett_ord(lista=list):
-    ordet = random.choice(lista)
-    return ordet
-
-def rita_ut_skärmen(försök, ord):
-
-
-def kolla_bokstav_i_ord(bokstav=str, ord=str):
-
-    if (len(bokstav) != 1) or (bokstav.isnumeric()):
-        print("Skriv endast bokstäver")
-        return False
-    for index, tecken in enumerate(ord):
-        if bokstav == tecken:
-            return True, index
-    return False
+def okänd_lista(sträng=str):
+    lokal_lista = []
+    for i in range(len(sträng)):
+        lokal_lista.append("_")
+    return lokal_lista
 
 
-def hänga_gubbe_main():
-    ordlista = ordlistan()
-    nuvarande_ord = välj_ett_ord(ordlista)
-    har_gissat_rätt = False
-    rätt_gissningar= {}
+def skriv_ut(lista=list, försök=int, felgissningar=list):
+
+    if försök == 0:
+        print(
+            """
+         _____
+         |   |
+         |
+         |
+        /|\ 
+        """
+        )
+    elif försök == 1:
+        print(
+            """
+         _____
+         |   |
+         |  ( )
+         |
+        /|\ 
+        """
+        )
+    elif försök == 2:
+        print(
+            """
+         _____
+         |   |
+         |  ( )
+         |   |-
+        /|\ 
+        """
+        )
+    elif försök == 3:
+        print(
+            """
+         _____
+         |   |
+         |  ( )
+         |  -|-
+        /|\ 
+        """
+        )
+    elif försök == 4:
+        print(
+            """
+         _____
+         |   |
+         |  ( )
+         |  -|-
+        /|\ /
+        """
+        )
+    elif försök == 5:
+        print(
+            """
+         _____
+         |   |
+         |  ( )
+         |  -|-
+        /|\ / \ 
+        """
+        )
+    print(*lista)
+    print(*felgissningar)
 
 
-    while not har_gissat_rätt:
-        gissnig = input("Gissnig:")
-        bokstav_i_ord, index =kolla_bokstav_i_ord(gissnig,nuvarande_ord)
-        if bokstav_i_ord:
-            rätt_gissningar{gissnig} = index
-            
+def gissa():
+    while True:
+        lokal_gissning = input("Gissning:  ").lower()
+        if (len(lokal_gissning) != 1) or lokal_gissning.isnumeric():
+            print("Måste vara endast en BOKSTAV")
+        else:
+            return lokal_gissning
+
+
+def kolla_vinst(lista=list):
+    for i in lista:
+        if i == "_":
+            return False
+    return True
+
+
+def hänga_gubbe():
+    försök = 0
+    ordlista = ["apa", "ariful", "sill", "jazz", "orangutang", "eldkastare"]
+    nuvarande_ord = random.choice(ordlista)
+    bokstäver_i_ordet = packa_upp_sträng(nuvarande_ord)
+    okända_bokstäver = okänd_lista(nuvarande_ord)
+    fel_gissningar = []
+    rätt_gissningar = []
+
+    while försök <= 5:
+        skriv_ut(okända_bokstäver, försök, fel_gissningar)
+        if kolla_vinst(okända_bokstäver):
+            print("Du vann!")
+            break
+        gissning = gissa()
+        if (not gissning in rätt_gissningar) and (not gissning in fel_gissningar):
+            for index, bokstav in enumerate(bokstäver_i_ordet):
+                if gissning == bokstav:
+                    okända_bokstäver[index] = bokstäver_i_ordet[index]
+            if not gissning in bokstäver_i_ordet:
+                print("Fel")
+                fel_gissningar.append(gissning)
+                försök += 1
+            else:
+                rätt_gissningar.append(gissning)
+        else:
+            print("Du har redan försökt denna bokstav")
+    return True
