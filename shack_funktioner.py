@@ -1,3 +1,6 @@
+from math import floor
+
+
 class Pieces:
     def __init__(self, position=tuple, type="blank", white=True):
         self.pos = position
@@ -117,3 +120,11 @@ def decifer_input(input=str):
 def set_texture(local_board, x, y, texture):
     local_board[x][y].texture = texture
     print_board(local_board)
+
+
+def move(local_board, current_coords, move_coords):
+    current_x = int(current_coords) // 10
+    current_y = int(current_coords) - 10 * current_x
+    # print(current_x, current_y)
+    move_x = int(move_coords) // 10
+    move_y = int(move_coords) - 10 * move_x
