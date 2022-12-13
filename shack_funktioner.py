@@ -90,9 +90,30 @@ def start_new_board():
 
 
 def print_board(local_list=list):
-    print("\n|---|---|---|---|---|---|---|---|")
-    for y in range(8):
-        print("| ", end="")
+    print("\n |---|---|---|---|---|---|---|---|")
+    i = 8
+    for y in range(-1, -9, -1):
+
+        print(f"{i}| ", end="")
         for x in range(8):
             print(local_list[x][y].texture, end="| ")
-        print("\n|---|---|---|---|---|---|---|---|")
+        print("\n |---|---|---|---|---|---|---|---|")
+        i -= 1
+    print("   A   B   C   D   E   F   G   H  ")
+
+
+def decifer_input(input=str):
+    current_pos, move_pos = input.split()
+    # print(current_pos, move_pos)
+    for index, letter in enumerate("ABCDEFGH"):
+        if letter == current_pos[0].capitalize():
+            current_coords = str(index) + str((int(current_pos[1]) - 1))
+        if letter == move_pos[0].capitalize():
+            move_coords = str(index) + str((int(move_pos[1]) - 1))
+    print(current_coords, move_coords)
+    return current_coords, move_coords
+
+
+def set_texture(local_board, x, y, texture):
+    local_board[x][y].texture = texture
+    print_board(local_board)
