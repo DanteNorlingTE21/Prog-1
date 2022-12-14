@@ -1,6 +1,17 @@
 from math import floor
 
 
+"""
+TODO
+Gör rokad KLAR
+
+
+Gör promotion
+
+
+"""
+
+
 class Pieces:
     def __init__(self, type="blank", white=True):
 
@@ -66,10 +77,24 @@ class Pawn(Pieces):
         if self_coords == move_coords:
             return False
 
-        if move_y - self_y != 1 and self.white:
+        if move_y - self_y != 1 and self.white and self_y != 1:
             return False
-        if move_y - self_y != -1 and not self.white:
+        if move_y - self_y != -1 and not self.white and self_y != 6:
             return False
+        if (
+            self_y == 1
+            and self.white
+            and move_y - self_y == 2
+            and local_board[move_x][move_y].type == "blank"
+        ):
+            return True
+        if (
+            self_y == 6
+            and not self.white
+            and move_y - self_y == -2
+            and local_board[move_x][move_y].type == "blank"
+        ):
+            return True
         if self_x - move_x == 0 and local_board[move_x][move_y].type == "blank":
             return True
         if (self_x - move_x == 1 or self_x - move_x == -1) and local_board[move_x][
@@ -120,7 +145,21 @@ class King(Pieces):
 
         if self_coords == move_coords:
             return False
-
+        if (
+            move_x - self_x == 2
+            and (self_y == 0 or self_y == 7)
+            and isinstance(local_board[self_x + 3][self_y], Rook)
+            and check_x_list_for_piece(local_board, self_y, self_x, move_x + 1)
+        ):
+            local_board[move_x - 1][self_y], local_board[move_x + 1][self_y] = (
+                local_board[move_x + 1][self_y],
+                local_board[move_x - 1][self_y],
+            )
+            # local_board[self_x][self_y], local_board[move_x][move_y] = (
+            # local_board[move_x][move_y],
+            # local_board[self_x][self_y],
+            # )
+            return True
         if abs(move_x - self_x) > 1 or abs(move_y - self_y) > 1:
             return False
         return True
@@ -345,12 +384,17 @@ def move(local_board, inputs, white_turn):
     # Capturing and moving
 
     checkmate = False
-    print(
-        "det är",
-        local_board[current_x][current_y].allowed_to_move_there(
-            local_board, move_coords
-        ),
-    )
+    if not isinstance(local_board[current_x][current_y], King):
+        print(
+            "det är",
+            local_board[current_x][current_y].allowed_to_move_there(
+                local_board, move_coords
+            ),
+        )
+    else:
+        print("Don't pring king!!")
+
+    print("Rutan är ", local_board[move_x][move_y].type)
 
     if local_board[move_x][move_y].type == "blank" and local_board[current_x][
         current_y
@@ -375,4 +419,5 @@ def move(local_board, inputs, white_turn):
             Pieces(),
         )
         return checkmate, (not white_turn)
+    print("Default")
     return False, white_turn
