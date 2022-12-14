@@ -66,7 +66,9 @@ class Pawn(Pieces):
         if self_coords == move_coords:
             return False
 
-        if move_y - self_y != 1:
+        if move_y - self_y != 1 and self.white:
+            return False
+        if move_y - self_y != -1 and not self.white:
             return False
         if self_x - move_x == 0 and local_board[move_x][move_y].type == "blank":
             return True
@@ -373,3 +375,4 @@ def move(local_board, inputs, white_turn):
             Pieces(),
         )
         return checkmate, (not white_turn)
+    return False, white_turn
