@@ -1,6 +1,17 @@
 from math import floor
 
 
+"""
+TODO
+Gör rokad KLAR
+
+
+Gör promotion
+
+
+"""
+
+
 class Pieces:
     def __init__(self, type="blank", white=True):
 
@@ -63,8 +74,27 @@ class Pawn(Pieces):
         move_x = move_coords // 10
         move_y = move_coords - move_x * 10
 
-        if move_y - self_y != 1:
+        if self_coords == move_coords:
             return False
+
+        if move_y - self_y != 1 and self.white and self_y != 1:
+            return False
+        if move_y - self_y != -1 and not self.white and self_y != 6:
+            return False
+        if (
+            self_y == 1
+            and self.white
+            and move_y - self_y == 2
+            and local_board[move_x][move_y].type == "blank"
+        ):
+            return True
+        if (
+            self_y == 6
+            and not self.white
+            and move_y - self_y == -2
+            and local_board[move_x][move_y].type == "blank"
+        ):
+            return True
         if self_x - move_x == 0 and local_board[move_x][move_y].type == "blank":
             return True
         if (self_x - move_x == 1 or self_x - move_x == -1) and local_board[move_x][
@@ -79,7 +109,24 @@ class Queen(Pieces):
 
     def allowed_to_move_there(self, local_board, move_coords):
         """move_coords in a two digit integer with the first being x and second being y"""
-        pass
+
+        self_coords = self.position_on_board(local_board)
+        self_x = self_coords // 10
+        self_y = self_coords - self_x * 10
+
+        move_x = move_coords // 10
+        move_y = move_coords - move_x * 10
+
+        if self_coords == move_coords:
+            return False
+        if self_x == move_x:
+            return check_y_list_for_piece(local_board, self_x, self_y, move_y)
+        if self_y == move_y:
+            return check_x_list_for_piece(local_board, self_y, self_x, move_x)
+        if abs(self_coords - move_coords) % 11 == 0:
+            return check_diagonal(local_board, self_x, move_x, self_y, move_y)
+        if abs(self_coords - move_coords) % 9 == 0:
+            return check_diagonal(local_board, self_x, move_x, self_y, move_y)
 
 
 class King(Pieces):
@@ -88,7 +135,34 @@ class King(Pieces):
 
     def allowed_to_move_there(self, local_board, move_coords):
         """move_coords in a two digit integer with the first being x and second being y"""
-        pass
+
+        self_coords = self.position_on_board(local_board)
+        self_x = self_coords // 10
+        self_y = self_coords - self_x * 10
+
+        move_x = move_coords // 10
+        move_y = move_coords - move_x * 10
+
+        if self_coords == move_coords:
+            return False
+        if (
+            move_x - self_x == 2
+            and (self_y == 0 or self_y == 7)
+            and isinstance(local_board[self_x + 3][self_y], Rook)
+            and check_x_list_for_piece(local_board, self_y, self_x, move_x + 1)
+        ):
+            local_board[move_x - 1][self_y], local_board[move_x + 1][self_y] = (
+                local_board[move_x + 1][self_y],
+                local_board[move_x - 1][self_y],
+            )
+            # local_board[self_x][self_y], local_board[move_x][move_y] = (
+            # local_board[move_x][move_y],
+            # local_board[self_x][self_y],
+            # )
+            return True
+        if abs(move_x - self_x) > 1 or abs(move_y - self_y) > 1:
+            return False
+        return True
 
 
 class Bishop(Pieces):
@@ -97,7 +171,21 @@ class Bishop(Pieces):
 
     def allowed_to_move_there(self, local_board, move_coords):
         """move_coords in a two digit integer with the first being x and second being y"""
-        pass
+
+        self_coords = self.position_on_board(local_board)
+        self_x = self_coords // 10
+        self_y = self_coords - self_x * 10
+
+        move_x = move_coords // 10
+        move_y = move_coords - move_x * 10
+
+        if self_coords == move_coords:
+            return False
+
+        if abs(self_coords - move_coords) % 11 == 0:
+            return check_diagonal(local_board, self_x, move_x, self_y, move_y)
+        if abs(self_coords - move_coords) % 9 == 0:
+            return check_diagonal(local_board, self_x, move_x, self_y, move_y)
 
 
 class Knight(Pieces):
@@ -106,7 +194,21 @@ class Knight(Pieces):
 
     def allowed_to_move_there(self, local_board, move_coords):
         """move_coords in a two digit integer with the first being x and second being y"""
-        pass
+
+        self_coords = self.position_on_board(local_board)
+        self_x = self_coords // 10
+        self_y = self_coords - self_x * 10
+
+        move_x = move_coords // 10
+        move_y = move_coords - move_x * 10
+
+        if self_coords == move_coords:
+            return False
+        if abs(move_y - self_y) == 2 and abs(move_x - self_x) == 1:
+            return True
+        if abs(move_y - self_y) == 1 and abs(move_x - self_x) == 2:
+            return True
+        return False
 
 
 def start_new_board():
@@ -147,7 +249,7 @@ def start_new_board():
     return board
 
 
-def print_board(local_list=list):
+def print_board(local_list=list, whites_turn=bool):
     print("\n |---|---|---|---|---|---|---|---|")
     i = 8
     for y in range(-1, -9, -1):
@@ -158,6 +260,10 @@ def print_board(local_list=list):
         print("\n |---|---|---|---|---|---|---|---|")
         i -= 1
     print("   A   B   C   D   E   F   G   H  ")
+    if whites_turn:
+        print("White's turn: \n")
+    else:
+        print("Black's turn: \n")
 
 
 def decifer_input(inputs=str):
@@ -210,7 +316,35 @@ def check_x_list_for_piece(board, y, x1, x2):
     return True
 
 
-def move(local_board, inputs):
+def y(x, k, m):
+    return k * x + m
+
+
+def check_diagonal(board, x1, x2, y1, y2):
+    # x1 = 3
+    # x2 = 0
+    # y1 = 1
+    # y2 = 4
+
+    slope = (x2 - x1) / (y2 - y1)
+    m = y2 - x2 * slope
+
+    slope, m = int(slope), int(m)
+    print("SLOPE: M", slope, m)
+
+    if x1 < x2:
+        for dx in range(x1 + 1, x2, 1):
+            if board[dx][y(dx, slope, m)].type != "blank":
+                return False
+        return True
+    if x2 < x1:
+        for dx in range(x1 - 1, x2, -1):
+            if board[dx][y(dx, slope, m)].type != "blank":
+                return False
+        return True
+
+
+def move(local_board, inputs, white_turn):
 
     # Decifering inputs
     try:
@@ -219,16 +353,16 @@ def move(local_board, inputs):
         move_coords = int(move_coords)
     except ValueError:
         print("coordinates where not two xy pairs: ValueError")
-        return False
+        return False, white_turn
     except TypeError:
         print(
             """decifer_input() did not return two strings. Input was wrong: TypeError"""
         )
-        return False
+        return False, white_turn
 
     if current_coords > 77 or current_coords < 0 or move_coords > 77 or move_coords < 0:
         print("Faulty range of coordinates")
-        return False
+        return False, white_turn
 
     current_x = int(current_coords) // 10
     current_y = int(current_coords) - 10 * current_x
@@ -242,16 +376,25 @@ def move(local_board, inputs):
     # check for piece
     if local_board[current_x][current_y].type == "blank":
         print("can't move blank")
-        return False
+        return False, white_turn
+    if local_board[current_x][current_y].white != white_turn:
+        print("Wrong color")
+        return False, white_turn
 
     # Capturing and moving
 
-    print(
-        "det är",
-        local_board[current_x][current_y].allowed_to_move_there(
-            local_board, move_coords
-        ),
-    )
+    checkmate = False
+    if not isinstance(local_board[current_x][current_y], King):
+        print(
+            "det är",
+            local_board[current_x][current_y].allowed_to_move_there(
+                local_board, move_coords
+            ),
+        )
+    else:
+        print("Don't pring king!!")
+
+    print("Rutan är ", local_board[move_x][move_y].type)
 
     if local_board[move_x][move_y].type == "blank" and local_board[current_x][
         current_y
@@ -260,6 +403,7 @@ def move(local_board, inputs):
             local_board[current_x][current_y],
             local_board[move_x][move_y],
         )
+        return False, (not white_turn)
     elif (
         local_board[move_x][move_y].type != "blank"
         and local_board[move_x][move_y].white != local_board[current_x][current_y].white
@@ -269,9 +413,11 @@ def move(local_board, inputs):
     ):
         if isinstance(local_board[move_x][move_y], King):
             print("checkmate")
+            checkmate = True
         local_board[move_x][move_y], local_board[current_x][current_y] = (
             local_board[current_x][current_y],
             Pieces(),
         )
-
-    print(local_board[current_x][current_y].position_on_board(local_board))
+        return checkmate, (not white_turn)
+    print("Default")
+    return False, white_turn
