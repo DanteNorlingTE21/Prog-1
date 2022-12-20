@@ -32,5 +32,27 @@ lista.append(sven)
 print(per.själv_i_lista(lista))
 
 
-for i in range(1, 6):
-    print(i)
+class Test:
+    klass_variabler = 0
+
+    def __init__(self, variabler):
+        self.värde = variabler
+
+
+print(Test.klass_variabler)
+Test.klass_variabler += 1
+print(Test.klass_variabler)
+test_objekt = Test(1)
+print(test_objekt.klass_variabler)
+Test.klass_variabler += 1
+print(test_objekt.klass_variabler)
+print(Test.klass_variabler)
+Test.klass_variabler += 1
+
+test_objekt.klass_variabler += (
+    1  # Verkar som att om man manipulerar variabeln i ett objekt så blir det separat.
+)
+
+
+print(test_objekt.klass_variabler)
+print(Test.klass_variabler)
