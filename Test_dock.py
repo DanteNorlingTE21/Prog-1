@@ -12,7 +12,9 @@ def palindrom(sträng=str):
     return False
 
 
-class objekt:
+class Klass:
+    objekt = 0
+
     def __init__(self, sak):
         self.sak = sak
 
@@ -21,16 +23,9 @@ class objekt:
             return True
 
 
-per = objekt(1)
-sture = objekt(2)
-sven = objekt(3)
-lista = []
-lista.append(per)
-lista.append(sture)
-lista.append(sven)
-
-print(per.själv_i_lista(lista))
-
-
-for i in range(1, 6):
-    print(i)
+for first in "ERTCBA":
+    for second in "TCNIAM":
+        for third in "NAURIE":
+            for fourth in "SBLGMK":
+                print(first + second + third + fourth, end=" ")
+            print("\n")
